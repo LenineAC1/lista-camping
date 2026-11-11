@@ -76,7 +76,12 @@
       background: var(--primary);
     }
 
-    .theme-btn {
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .theme-btn, .layout-btn {
       background: var(--card);
       border: 1px solid var(--border);
       color: var(--text);
@@ -160,6 +165,34 @@
 
     button.btn-primary:hover {
       background: var(--primary-hover);
+    }
+
+    /* Sistema de Abas */
+    .tabs-container {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      margin-bottom: 16px;
+      padding-bottom: 4px;
+    }
+
+    .tab-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
     }
 
     .section-card {
@@ -369,7 +402,10 @@
         <span id="statusDot" class="status-dot" title="Status da sincronização"></span>
         Checklist para acampamento
       </h1>
-      <button id="themeToggle" class="theme-btn">🌓 Tema</button>
+      <div class="header-actions">
+        <button id="layoutToggle" class="layout-btn" title="Alternar Layout">📑 Abas</button>
+        <button id="themeToggle" class="theme-btn" title="Alternar Tema">🌓 Tema</button>
+      </div>
     </header>
 
     <!-- Campos para personalizar os nomes das 2 pessoas -->
@@ -394,6 +430,7 @@
       <button type="submit" class="btn-primary">+ Seção</button>
     </form>
 
+    <div id="tabsContainer" class="tabs-container" style="display: none;"></div>
     <div id="sectionsContainer">
       <div class="empty-state">Carregando lista...</div>
     </div>
@@ -429,16 +466,23 @@
     const secoesRef = collection(db, "secoes");
 
     const sectionsContainer = document.getElementById("sectionsContainer");
+    const tabsContainer = document.getElementById("tabsContainer");
     const newSectionForm = document.getElementById("newSectionForm");
     const sectionInput = document.getElementById("sectionInput");
     const statusDot = document.getElementById("statusDot");
     const themeToggle = document.getElementById("themeToggle");
+    const layoutToggle = document.getElementById("layoutToggle");
     const nameP1Input = document.getElementById("nameP1Input");
     const nameP2Input = document.getElementById("nameP2Input");
 
-    // Carregar nomes salvos no navegador (LocalStorage)
-    nameP1Input.value = localStorage.getItem("nameP1") || "Sabrina";
-    nameP2Input.value = localStorage.getItem("nameP2") || "Pessoa 2";
+    // Carregar configurações salvas no navegador (LocalStorage)
+    nameP1Input.value = localStorage.getItem("nameP1") || "Grupo 1";
+    nameP2Input.value = localStorage.getItem("nameP2") || "Grupo 2";
+    
+    let currentLayout = localStorage.getItem("layout") || "list"; // 'list' ou 'tabs'
+    let activeTabId = localStorage.getItem("activeTabId") || null;
+
+    updateLayoutButtonUI();
 
     nameP1Input.addEventListener("input", () => {
       localStorage.setItem("nameP1", nameP1Input.value || "P1");
@@ -464,6 +508,24 @@
       );
     });
 
+    // Alternar Layout (Lista vs Abas)
+    layoutToggle.addEventListener("click", () => {
+      currentLayout = currentLayout === "list" ? "tabs" : "list";
+      localStorage.setItem("layout", currentLayout);
+      updateLayoutButtonUI();
+      renderCachedSections();
+    });
+
+    function updateLayoutButtonUI() {
+      if (currentLayout === "tabs") {
+        layoutToggle.textContent = "📜 Lista";
+        layoutToggle.title = "Mudar para modo Lista";
+      } else {
+        layoutToggle.textContent = "📑 Abas";
+        layoutToggle.title = "Mudar para modo Abas";
+      }
+    }
+
     // Adicionar nova seção
     newSectionForm.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -472,11 +534,15 @@
 
       sectionInput.value = "";
       try {
-        await addDoc(secoesRef, {
+        const docRef = await addDoc(secoesRef, {
           titulo,
           itens: [],
           criadoEm: serverTimestamp()
         });
+        if (currentLayout === "tabs") {
+          activeTabId = docRef.id;
+          localStorage.setItem("activeTabId", activeTabId);
+        }
       } catch (err) {
         alert("Erro ao criar seção. Verifique as regras do Firestore.");
         console.error(err);
@@ -490,7 +556,7 @@
       (snapshot) => {
         statusDot.classList.add("online");
         lastSnapshotDocs = snapshot.docs;
-        renderSections(lastSnapshotDocs);
+        renderCachedSections();
       },
       (error) => {
         statusDot.classList.remove("online");
@@ -506,6 +572,13 @@
     function renderCachedSections() {
       if (lastSnapshotDocs.length > 0) {
         renderSections(lastSnapshotDocs);
+      } else {
+        sectionsContainer.innerHTML = `
+          <div class="empty-state">
+            Nenhuma seção criada ainda.<br>
+            Adicione uma seção acima para começar!
+          </div>`;
+        tabsContainer.style.display = "none";
       }
     }
 
@@ -519,196 +592,243 @@
             Nenhuma seção criada ainda.<br>
             Adicione uma seção acima para começar!
           </div>`;
+        tabsContainer.style.display = "none";
         return;
+      }
+
+      // Validação da aba ativa no modo abas
+      const docIds = docs.map(d => d.id);
+      if (!activeTabId || !docIds.includes(activeTabId)) {
+        activeTabId = docIds[0];
+        localStorage.setItem("activeTabId", activeTabId);
       }
 
       sectionsContainer.innerHTML = "";
 
-      docs.forEach((docSnap) => {
-        const data = docSnap.data();
-        const sectionId = docSnap.id;
-        const itens = Array.isArray(data.itens) ? data.itens : [];
-        
-        const p1Concluidos = itens.filter((i) => i.p1).length;
-        const p2Concluidos = itens.filter((i) => i.p2).length;
+      if (currentLayout === "tabs") {
+        tabsContainer.style.display = "flex";
+        tabsContainer.innerHTML = "";
 
-        const card = document.createElement("div");
-        card.className = "section-card";
+        // Criar os botões de abas
+        docs.forEach((docSnap) => {
+          const data = docSnap.data();
+          const sectionId = docSnap.id;
+          const itens = Array.isArray(data.itens) ? data.itens : [];
+          const concluidosP1 = itens.filter(i => i.p1).length;
+          const concluidosP2 = itens.filter(i => i.p2).length;
+          const total = itens.length;
 
-        // Cabeçalho da seção
-        const header = document.createElement("div");
-        header.className = "section-header";
-        
-        const titleGroup = document.createElement("div");
-        titleGroup.className = "section-title-group";
-
-        const titleSpan = document.createElement("span");
-        titleSpan.className = "section-title";
-        titleSpan.textContent = data.titulo;
-        titleSpan.title = "Clique para renomear a seção";
-
-        titleSpan.addEventListener("click", () => {
-          const novoTitulo = prompt("Renomear seção:", data.titulo);
-          if (novoTitulo !== null && novoTitulo.trim() !== "") {
-            updateDoc(doc(db, "secoes", sectionId), { titulo: novoTitulo.trim() });
-          }
-        });
-
-        const badgesGroup = document.createElement("div");
-        badgesGroup.className = "badges-group";
-        badgesGroup.innerHTML = `
-          <span class="badge">${name1}: ${p1Concluidos}/${itens.length}</span>
-          <span class="badge">${name2}: ${p2Concluidos}/${itens.length}</span>
-        `;
-
-        titleGroup.appendChild(titleSpan);
-        titleGroup.appendChild(badgesGroup);
-
-        const deleteSectionBtn = document.createElement("button");
-        deleteSectionBtn.className = "btn-icon-danger";
-        deleteSectionBtn.textContent = "🗑️";
-        deleteSectionBtn.title = "Excluir seção";
-        deleteSectionBtn.addEventListener("click", async () => {
-          if (confirm(`Excluir a seção "${data.titulo}" e todos os seus itens?`)) {
-            await deleteDoc(doc(db, "secoes", sectionId));
-          }
-        });
-
-        header.appendChild(titleGroup);
-        header.appendChild(deleteSectionBtn);
-
-        // Lista de itens
-        const ul = document.createElement("ul");
-        ul.className = "item-list";
-
-        itens.forEach((item, index) => {
-          const li = document.createElement("li");
-          li.className = "item-row";
-
-          const itemContent = document.createElement("div");
-          itemContent.className = "item-content";
-
-          const span = document.createElement("span");
-          const bothDone = item.p1 && item.p2;
-          span.className = `item-text ${bothDone ? "done-both" : ""}`;
-          span.textContent = item.nome;
-          span.title = "Clique para editar o item";
-
-          span.addEventListener("click", (e) => {
-            e.preventDefault();
-            const novoNome = prompt("Editar item:", item.nome);
-            if (novoNome !== null && novoNome.trim() !== "") {
-              const updatedItens = [...itens];
-              updatedItens[index] = { ...item, nome: novoNome.trim() };
-              updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
-            }
-          });
-
-          // Grupo de checkboxes para os nomes personalizados
-          const checksGroup = document.createElement("div");
-          checksGroup.className = "checks-group";
-
-          // Checkbox Pessoa 1
-          const labelP1 = document.createElement("label");
-          labelP1.className = "check-wrapper";
-          const checkP1 = document.createElement("input");
-          checkP1.type = "checkbox";
-          checkP1.checked = !!item.p1;
-          checkP1.addEventListener("change", async () => {
-            const updatedItens = [...itens];
-            updatedItens[index] = { ...item, p1: checkP1.checked };
-            await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
-          });
-          labelP1.appendChild(checkP1);
-          labelP1.appendChild(document.createTextNode(" " + name1));
-
-          // Checkbox Pessoa 2
-          const labelP2 = document.createElement("label");
-          labelP2.className = "check-wrapper";
-          const checkP2 = document.createElement("input");
-          checkP2.type = "checkbox";
-          checkP2.checked = !!item.p2;
-          checkP2.addEventListener("change", async () => {
-            const updatedItens = multimappedItens => updatedItens; // no-op safeguard
-            const updatedItensList = [...itens];
-            updatedItensList[index] = { ...item, p2: checkP2.checked };
-            await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItensList });
-          });
-          labelP2.appendChild(checkP2);
-          labelP2.appendChild(document.createTextNode(" " + name2));
-
-          checksGroup.appendChild(labelP1);
-          checksGroup.appendChild(labelP2);
-
-          itemContent.appendChild(span);
-          itemContent.appendChild(checksGroup);
-
-          const actionsDiv = document.createElement("div");
-          actionsDiv.className = "item-actions";
-
-          if (item.link) {
-            const linkBtn = document.createElement("a");
-            linkBtn.className = "btn-link-icon";
-            linkBtn.href = item.link;
-            linkBtn.target = "_blank";
-            linkBtn.rel = "noopener noreferrer";
-            linkBtn.textContent = "🔗";
-            linkBtn.title = `Abrir link: ${item.link}`;
-            actionsDiv.appendChild(linkBtn);
-          }
-
-          const delItemBtn = document.createElement("button");
-          delItemBtn.className = "btn-icon-danger";
-          delItemBtn.textContent = "✕";
-          delItemBtn.title = "Remover item";
-          delItemBtn.addEventListener("click", async () => {
-            const updatedItens = itens.filter((_, i) => i !== index);
-            await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
-          });
-
-          actionsDiv.appendChild(delItemBtn);
-
-          li.appendChild(itemContent);
-          li.appendChild(actionsDiv);
-          ul.appendChild(li);
-        });
-
-        // Formulário para novo item
-        const addForm = document.createElement("form");
-        addForm.className = "add-item-form";
-        addForm.innerHTML = `
-          <input type="text" placeholder="Adicionar item..." required />
-          <input type="url" placeholder="Link (opcional, ex: https://...)" />
-          <button type="submit" class="btn-primary">+</button>
-        `;
-
-        addForm.addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const inputs = addForm.querySelectorAll("input");
-          const nome = inputs[0].value.trim();
-          let link = inputs[1].value.trim();
+          const tabBtn = document.createElement("button");
+          tabBtn.className = `tab-btn ${sectionId === activeTabId ? "active" : ""}`;
+          tabBtn.textContent = `${data.titulo} (${Math.min(concluidosP1, concluidosP2)}/${total})`;
           
-          if (!nome) return;
+          tabBtn.addEventListener("click", () => {
+            activeTabId = sectionId;
+            localStorage.setItem("activeTabId", activeTabId);
+            renderSections(lastSnapshotDocs);
+          });
 
-          if (link && !link.startsWith("http://") && !link.startsWith("https://")) {
-            link = "https://" + link;
+          tabsContainer.appendChild(tabBtn);
+        });
+
+        // Filtrar apenas o documento da aba ativa
+        const activeDoc = docs.find(d => d.id === activeTabId);
+        if (activeDoc) {
+          sectionsContainer.appendChild(createSectionCard(activeDoc, name1, name2));
+        }
+
+      } else {
+        // Modo Lista tradicional (exibe todas)
+        tabsContainer.style.display = "none";
+        docs.forEach((docSnap) => {
+          sectionsContainer.appendChild(createSectionCard(docSnap, name1, name2));
+        });
+      }
+    }
+
+    function createSectionCard(docSnap, name1, name2) {
+      const data = docSnap.data();
+      const sectionId = docSnap.id;
+      const itens = Array.isArray(data.itens) ? data.itens : [];
+      
+      const p1Concluidos = itens.filter((i) => i.p1).length;
+      const p2Concluidos = itens.filter((i) => i.p2).length;
+
+      const card = document.createElement("div");
+      card.className = "section-card";
+
+      // Cabeçalho da seção
+      const header = document.createElement("div");
+      header.className = "section-header";
+      
+      const titleGroup = document.createElement("div");
+      titleGroup.className = "section-title-group";
+
+      const titleSpan = document.createElement("span");
+      titleSpan.className = "section-title";
+      titleSpan.textContent = data.titulo;
+      titleSpan.title = "Clique para renomear a seção";
+
+      titleSpan.addEventListener("click", () => {
+        const novoTitulo = prompt("Renomear seção:", data.titulo);
+        if (novoTitulo !== null && novoTitulo.trim() !== "") {
+          updateDoc(doc(db, "secoes", sectionId), { titulo: novoTitulo.trim() });
+        }
+      });
+
+      const badgesGroup = document.createElement("div");
+      badgesGroup.className = "badges-group";
+      badgesGroup.innerHTML = `
+        <span class="badge">${name1}: ${p1Concluidos}/${itens.length}</span>
+        <span class="badge">${name2}: ${p2Concluidos}/${itens.length}</span>
+      `;
+
+      titleGroup.appendChild(titleSpan);
+      titleGroup.appendChild(badgesGroup);
+
+      const deleteSectionBtn = document.createElement("button");
+      deleteSectionBtn.className = "btn-icon-danger";
+      deleteSectionBtn.textContent = "🗑️";
+      deleteSectionBtn.title = "Excluir seção";
+      deleteSectionBtn.addEventListener("click", async () => {
+        if (confirm(`Excluir a seção "${data.titulo}" e todos os seus itens?`)) {
+          await deleteDoc(doc(db, "secoes", sectionId));
+        }
+      });
+
+      header.appendChild(titleGroup);
+      header.appendChild(deleteSectionBtn);
+
+      // Lista de itens
+      const ul = document.createElement("ul");
+      ul.className = "item-list";
+
+      itens.forEach((item, index) => {
+        const li = document.createElement("li");
+        li.className = "item-row";
+
+        const itemContent = document.createElement("div");
+        itemContent.className = "item-content";
+
+        const span = document.createElement("span");
+        const bothDone = item.p1 && item.p2;
+        span.className = `item-text ${bothDone ? "done-both" : ""}`;
+        span.textContent = item.nome;
+        span.title = "Clique para editar o item";
+
+        span.addEventListener("click", (e) => {
+          e.preventDefault();
+          const novoNome = prompt("Editar item:", item.nome);
+          if (novoNome !== null && novoNome.trim() !== "") {
+            const updatedItens = [...itens];
+            updatedItens[index] = { ...item, nome: novoNome.trim() };
+            updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
           }
+        });
 
-          inputs[0].value = "";
-          inputs[1].value = "";
+        // Grupo de checkboxes para os nomes personalizados
+        const checksGroup = document.createElement("div");
+        checksGroup.className = "checks-group";
 
-          const novoItem = { nome, p1: false, p2: false };
-          if (link) novoItem.link = link;
+        // Checkbox Pessoa 1
+        const labelP1 = document.createElement("label");
+        labelP1.className = "check-wrapper";
+        const checkP1 = document.createElement("input");
+        checkP1.type = "checkbox";
+        checkP1.checked = !!item.p1;
+        checkP1.addEventListener("change", async () => {
+          const updatedItens = [...itens];
+          updatedItens[index] = { ...item, p1: checkP1.checked };
+          await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
+        });
+        labelP1.appendChild(checkP1);
+        labelP1.appendChild(document.createTextNode(" " + name1));
 
-          const updatedItens = [...itens, novoItem];
+        // Checkbox Pessoa 2
+        const labelP2 = document.createElement("label");
+        labelP2.className = "check-wrapper";
+        const checkP2 = document.createElement("input");
+        checkP2.type = "checkbox";
+        checkP2.checked = !!item.p2;
+        checkP2.addEventListener("change", async () => {
+          const updatedItensList = [...itens];
+          updatedItensList[index] = { ...item, p2: checkP2.checked };
+          await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItensList });
+        });
+        labelP2.appendChild(checkP2);
+        labelP2.appendChild(document.createTextNode(" " + name2));
+
+        checksGroup.appendChild(labelP1);
+        checksGroup.appendChild(labelP2);
+
+        itemContent.appendChild(span);
+        itemContent.appendChild(checksGroup);
+
+        const actionsDiv = document.createElement("div");
+        actionsDiv.className = "item-actions";
+
+        if (item.link) {
+          const linkBtn = document.createElement("a");
+          linkBtn.className = "btn-link-icon";
+          linkBtn.href = item.link;
+          linkBtn.target = "_blank";
+          linkBtn.rel = "noopener noreferrer";
+          linkBtn.textContent = "🔗";
+          linkBtn.title = `Abrir link: ${item.link}`;
+          actionsDiv.appendChild(linkBtn);
+        }
+
+        const delItemBtn = document.createElement("button");
+        delItemBtn.className = "btn-icon-danger";
+        delItemBtn.textContent = "✕";
+        delItemBtn.title = "Remover item";
+        delItemBtn.addEventListener("click", async () => {
+          const updatedItens = itens.filter((_, i) => i !== index);
           await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
         });
 
-        card.appendChild(header);
-        card.appendChild(ul);
-        card.appendChild(addForm);
-        sectionsContainer.appendChild(card);
+        actionsDiv.appendChild(delItemBtn);
+
+        li.appendChild(itemContent);
+        li.appendChild(actionsDiv);
+        ul.appendChild(li);
       });
+
+      // Formulário para novo item
+      const addForm = document.createElement("form");
+      addForm.className = "add-item-form";
+      addForm.innerHTML = `
+        <input type="text" placeholder="Adicionar item..." required />
+        <input type="url" placeholder="Link (opcional, ex: https://...)" />
+        <button type="submit" class="btn-primary">+</button>
+      `;
+
+      addForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const inputs = addForm.querySelectorAll("input");
+        const nome = inputs[0].value.trim();
+        let link = inputs[1].value.trim();
+        
+        if (!nome) return;
+
+        if (link && !link.startsWith("http://") && !link.startsWith("https://")) {
+          link = "https://" + link;
+        }
+
+        inputs[0].value = "";
+        inputs[1].value = "";
+
+        const novoItem = { nome, p1: false, p2: false };
+        if (link) novoItem.link = link;
+
+        const updatedItens = [...itens, novoItem];
+        await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
+      });
+
+      card.appendChild(header);
+      card.appendChild(ul);
+      card.appendChild(addForm);
+      return card;
     }
   </script>
 </body>
