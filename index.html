@@ -360,6 +360,16 @@
       background: rgba(37, 99, 235, 0.1);
     }
 
+    .btn-link-icon.btn-link-empty {
+      color: var(--muted);
+      opacity: 0.5;
+    }
+
+    .btn-link-icon.btn-link-empty:hover {
+      opacity: 1;
+      background: rgba(148, 163, 184, 0.15);
+    }
+
     .add-item-form {
       display: flex;
       gap: 8px;
@@ -411,11 +421,11 @@
     <!-- Campos para personalizar os nomes das 2 pessoas -->
     <div class="names-config-box">
       <label>
-        Nome Pessoa 1:
+        Nome Grupo 1:
         <input type="text" id="nameP1Input" value="Pessoa 1" />
       </label>
       <label>
-        Nome Pessoa 2:
+        Nome Grupo 2:
         <input type="text" id="nameP2Input" value="Pessoa 2" />
       </label>
     </div>
@@ -767,6 +777,7 @@
         const actionsDiv = document.createElement("div");
         actionsDiv.className = "item-actions";
 
+        // Botão para abrir o link (se houver)
         if (item.link) {
           const linkBtn = document.createElement("a");
           linkBtn.className = "btn-link-icon";
@@ -777,6 +788,37 @@
           linkBtn.title = `Abrir link: ${item.link}`;
           actionsDiv.appendChild(linkBtn);
         }
+
+        // Botão para adicionar/editar/remover link
+        const editLinkBtn = document.createElement("button");
+        editLinkBtn.className = `btn-link-icon ${!item.link ? "btn-link-empty" : ""}`;
+        editLinkBtn.textContent = item.link ? "✏️" : "🔗+";
+        editLinkBtn.title = item.link
+          ? "Editar ou remover link do item"
+          : "Adicionar link ao item";
+        editLinkBtn.addEventListener("click", async (e) => {
+          e.preventDefault();
+          const promptMsg = item.link
+            ? `Editar link (deixe vazio para remover):\nLink atual: ${item.link}`
+            : "Inserir URL do link para este item (ex: https://...):";
+          const res = prompt(promptMsg, item.link || "");
+          if (res !== null) {
+            let novoLink = res.trim();
+            if (novoLink && !novoLink.startsWith("http://") && !novoLink.startsWith("https://")) {
+              novoLink = "https://" + novoLink;
+            }
+            const updatedItens = [...itens];
+            const itemAtualizado = { ...item };
+            if (novoLink) {
+              itemAtualizado.link = novoLink;
+            } else {
+              delete itemAtualizado.link;
+            }
+            updatedItens[index] = itemAtualizado;
+            await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
+          }
+        });
+        actionsDiv.appendChild(editLinkBtn);
 
         const delItemBtn = document.createElement("button");
         delItemBtn.className = "btn-icon-danger";
