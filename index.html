@@ -41,13 +41,15 @@
     body {
       background: var(--bg);
       color: var(--text);
-      padding: 20px 16px 60px;
+      padding: 16px 12px 60px;
       transition: background 0.2s, color 0.2s;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .container {
       max-width: 720px;
       margin: 0 auto;
+      width: 100%;
     }
 
     header {
@@ -55,13 +57,16 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 16px;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     header h1 {
-      font-size: 1.5rem;
+      font-size: 1.35rem;
       display: flex;
       align-items: center;
       gap: 8px;
+      min-width: 0;
     }
 
     .status-dot {
@@ -370,6 +375,162 @@
       background: rgba(148, 163, 184, 0.15);
     }
 
+    .item-valor-tag {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #059669;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 2px 7px;
+      border-radius: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+
+    body.dark .item-valor-tag {
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.2);
+    }
+
+    .item-valor-tag.empty {
+      color: var(--muted);
+      background: var(--bg);
+      border: 1px dashed var(--border);
+      opacity: 0.7;
+    }
+
+    .item-valor-tag:hover {
+      opacity: 1;
+      filter: brightness(0.95);
+    }
+
+    .tab-btn.tab-btn-finance {
+      margin-left: auto;
+      border-color: #10b981;
+      color: #059669;
+    }
+
+    body.dark .tab-btn.tab-btn-finance {
+      color: #34d399;
+      border-color: #059669;
+    }
+
+    .tab-btn.tab-btn-finance.active {
+      background: #059669;
+      color: #ffffff;
+      border-color: #059669;
+    }
+
+    /* Tabela e visualização de Valores/Gastos */
+    .finance-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    }
+
+    .finance-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .finance-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .finance-total-card {
+      background: linear-gradient(135deg, #059669, #047857);
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      min-width: 160px;
+    }
+
+    .finance-total-label {
+      font-size: 0.8rem;
+      opacity: 0.9;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+
+    .finance-total-amount {
+      font-size: 1.4rem;
+      font-weight: 800;
+    }
+
+    .finance-section {
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .finance-section-title {
+      background: var(--bg);
+      padding: 10px 14px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .finance-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .finance-table th,
+    .finance-table td {
+      padding: 10px 14px;
+      text-align: left;
+    }
+
+    .finance-table th {
+      background: var(--card);
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .finance-table td {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .finance-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .finance-table .col-val {
+      text-align: right;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .finance-link-icon {
+      color: var(--link-color);
+      text-decoration: none;
+      margin-left: 6px;
+      font-size: 0.85rem;
+    }
+
     .add-item-form {
       display: flex;
       gap: 8px;
@@ -390,6 +551,13 @@
       font-size: 0.95rem;
     }
 
+    .add-item-form input[type="number"] {
+      flex: 1;
+      min-width: 90px;
+      padding: 9px 12px;
+      font-size: 0.95rem;
+    }
+
     .add-item-form button {
       padding: 9px 14px;
       font-size: 0.95rem;
@@ -402,6 +570,146 @@
       background: var(--card);
       border: 1px dashed var(--border);
       border-radius: 12px;
+    }
+
+    /* Otimizações Responsivas para Celular / Telas Pequenas */
+    @media (max-width: 600px) {
+      body {
+        padding: 12px 8px 60px;
+      }
+
+      header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+
+      header h1 {
+        font-size: 1.25rem;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .header-actions {
+        display: flex;
+        width: 100%;
+      }
+
+      .header-actions button {
+        flex: 1;
+        padding: 10px;
+      }
+
+      .names-config-box {
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px;
+      }
+
+      .new-section-box {
+        flex-direction: column;
+      }
+
+      .new-section-box input[type="text"],
+      .new-section-box button {
+        width: 100%;
+        min-height: 44px; /* Tamanho confortável para toque */
+      }
+
+      .section-card {
+        padding: 12px;
+      }
+
+      .section-header {
+        align-items: flex-start;
+      }
+
+      .item-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding: 10px 6px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .item-row:last-child {
+        border-bottom: none;
+      }
+
+      .item-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        width: 100%;
+      }
+
+      .item-text {
+        font-size: 1rem;
+        width: 100%;
+      }
+
+      .checks-group {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 16px;
+      }
+
+      .check-wrapper {
+        font-size: 0.85rem;
+        padding: 4px 6px;
+        background: var(--bg);
+        border-radius: 6px;
+      }
+
+      .check-wrapper input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+      }
+
+      .item-actions {
+        align-self: flex-end;
+        gap: 8px;
+        margin-top: -2px;
+      }
+
+      .btn-link-icon,
+      .btn-icon-danger {
+        padding: 6px 10px;
+        font-size: 1.1rem;
+        min-height: 38px;
+        min-width: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .add-item-form {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .add-item-form input[type="text"],
+      .add-item-form input[type="url"],
+      .add-item-form input[type="number"],
+      .add-item-form button {
+        width: 100%;
+        min-height: 44px;
+        font-size: 1rem;
+      }
+
+      .tab-btn.tab-btn-finance {
+        margin-left: 0;
+      }
+
+      .tabs-container {
+        padding-bottom: 8px;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .tab-btn {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+      }
     }
   </style>
 </head>
@@ -608,7 +916,7 @@
 
       // Validação da aba ativa no modo abas
       const docIds = docs.map(d => d.id);
-      if (!activeTabId || !docIds.includes(activeTabId)) {
+      if (!activeTabId || (!docIds.includes(activeTabId) && activeTabId !== "finance")) {
         activeTabId = docIds[0];
         localStorage.setItem("activeTabId", activeTabId);
       }
@@ -619,7 +927,7 @@
         tabsContainer.style.display = "flex";
         tabsContainer.innerHTML = "";
 
-        // Criar os botões de abas
+        // Criar os botões de abas para cada seção
         docs.forEach((docSnap) => {
           const data = docSnap.data();
           const sectionId = docSnap.id;
@@ -641,10 +949,26 @@
           tabsContainer.appendChild(tabBtn);
         });
 
-        // Filtrar apenas o documento da aba ativa
-        const activeDoc = docs.find(d => d.id === activeTabId);
-        if (activeDoc) {
-          sectionsContainer.appendChild(createSectionCard(activeDoc, name1, name2));
+        // Aba exclusiva para visualização de Valores e Gastos Totais
+        const financeTabBtn = document.createElement("button");
+        financeTabBtn.className = `tab-btn tab-btn-finance ${activeTabId === "finance" ? "active" : ""}`;
+        financeTabBtn.innerHTML = "💰 Gastos / Valores";
+        financeTabBtn.title = "Visualizar valores de todos os itens e total geral";
+        financeTabBtn.addEventListener("click", () => {
+          activeTabId = "finance";
+          localStorage.setItem("activeTabId", activeTabId);
+          renderSections(lastSnapshotDocs);
+        });
+        tabsContainer.appendChild(financeTabBtn);
+
+        // Exibir aba de finanças ou o card da seção ativa
+        if (activeTabId === "finance") {
+          sectionsContainer.appendChild(createFinanceView(docs));
+        } else {
+          const activeDoc = docs.find(d => d.id === activeTabId);
+          if (activeDoc) {
+            sectionsContainer.appendChild(createSectionCard(activeDoc, name1, name2));
+          }
         }
 
       } else {
@@ -653,7 +977,126 @@
         docs.forEach((docSnap) => {
           sectionsContainer.appendChild(createSectionCard(docSnap, name1, name2));
         });
+        // No modo lista, exibe também o resumo financeiro ao final
+        sectionsContainer.appendChild(createFinanceView(docs));
       }
+    }
+
+    function createFinanceView(docs) {
+      const container = document.createElement("div");
+      container.className = "finance-card";
+
+      let totalGeral = 0;
+      let totalItensComValor = 0;
+
+      // Calcular o total geral primeiro
+      docs.forEach(docSnap => {
+        const data = docSnap.data();
+        const itens = Array.isArray(data.itens) ? data.itens : [];
+        itens.forEach(item => {
+          if (item.valor !== undefined && item.valor !== null && item.valor !== "") {
+            const v = parseFloat(item.valor) || 0;
+            totalGeral += v;
+            totalItensComValor++;
+          }
+        });
+      });
+
+      // Topo com Totalizadores (Apenas Leitura)
+      const header = document.createElement("div");
+      header.className = "finance-header";
+      header.innerHTML = `
+        <div class="finance-title">
+          <span>📊 Resumo de Gastos e Valores</span>
+        </div>
+        <div class="finance-total-card">
+          <span class="finance-total-label">Total Geral Estimado</span>
+          <span class="finance-total-amount">
+            ${totalGeral.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+          </span>
+        </div>
+      `;
+      container.appendChild(header);
+
+      if (totalItensComValor === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.innerHTML = `
+          Nenhum item com valor cadastrado ainda.<br>
+          Defina o valor dos itens nas seções clicando no botão <strong>"+ R$"</strong> ou informando ao criar um item.
+        `;
+        container.appendChild(empty);
+        return container;
+      }
+
+      // Detalhamento por Seção
+      docs.forEach(docSnap => {
+        const data = docSnap.data();
+        const itens = Array.isArray(data.itens) ? data.itens : [];
+        const itensComValor = itens.filter(
+          item => item.valor !== undefined && item.valor !== null && item.valor !== ""
+        );
+
+        if (itensComValor.length === 0) return;
+
+        const subtotalSecao = itensComValor.reduce((sum, item) => sum + (parseFloat(item.valor) || 0), 0);
+
+        const secDiv = document.createElement("div");
+        secDiv.className = "finance-section";
+
+        const secTitle = document.createElement("div");
+        secTitle.className = "finance-section-title";
+        secTitle.innerHTML = `
+          <span>📁 ${data.titulo} (${itensComValor.length} itens)</span>
+          <span style="font-weight: 700; color: #059669;">
+            ${subtotalSecao.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+          </span>
+        `;
+        secDiv.appendChild(secTitle);
+
+        const table = document.createElement("table");
+        table.className = "finance-table";
+        table.innerHTML = `
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th style="text-align: right;">Valor</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        `;
+
+        const tbody = table.querySelector("tbody");
+        itensComValor.forEach(item => {
+          const tr = document.createElement("tr");
+          const vNum = parseFloat(item.valor) || 0;
+          
+          let linkHtml = "";
+          if (item.link) {
+            linkHtml = `
+              <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="finance-link-icon" title="Abrir link do item">
+                🔗
+              </a>
+            `;
+          }
+
+          tr.innerHTML = `
+            <td>
+              <span>${item.nome}</span>
+              ${linkHtml}
+            </td>
+            <td class="col-val">
+              ${vNum.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        secDiv.appendChild(table);
+        container.appendChild(secDiv);
+      });
+
+      return container;
     }
 
     function createSectionCard(docSnap, name1, name2) {
@@ -740,6 +1183,39 @@
         const checksGroup = document.createElement("div");
         checksGroup.className = "checks-group";
 
+        // Tag de Valor/Gasto
+        const valorBtn = document.createElement("button");
+        valorBtn.type = "button";
+        const temValor = item.valor !== undefined && item.valor !== null && item.valor !== "";
+        valorBtn.className = `item-valor-tag ${!temValor ? "empty" : ""}`;
+        const valorNum = parseFloat(item.valor) || 0;
+        valorBtn.textContent = temValor
+          ? valorNum.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
+          : "+ R$";
+        valorBtn.title = temValor
+          ? `Gasto: R$ ${valorNum.toFixed(2)} (Clique para editar ou remover)`
+          : "Clique para adicionar valor/gasto a este item";
+        valorBtn.addEventListener("click", async (e) => {
+          e.preventDefault();
+          const atual = temValor ? valorNum.toFixed(2) : "";
+          const res = prompt(
+            "Valor / Gasto do item em R$ (ex: 49.90):\nDeixe vazio para remover.",
+            atual
+          );
+          if (res !== null) {
+            const limpo = res.trim().replace(",", ".");
+            const updatedItens = [...itens];
+            const itemAtualizado = { ...item };
+            if (limpo === "" || isNaN(parseFloat(limpo))) {
+              delete itemAtualizado.valor;
+            } else {
+              itemAtualizado.valor = parseFloat(limpo);
+            }
+            updatedItens[index] = itemAtualizado;
+            await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
+          }
+        });
+
         // Checkbox Pessoa 1
         const labelP1 = document.createElement("label");
         labelP1.className = "check-wrapper";
@@ -768,6 +1244,7 @@
         labelP2.appendChild(checkP2);
         labelP2.appendChild(document.createTextNode(" " + name2));
 
+        checksGroup.appendChild(valorBtn);
         checksGroup.appendChild(labelP1);
         checksGroup.appendChild(labelP2);
 
@@ -841,7 +1318,8 @@
       addForm.className = "add-item-form";
       addForm.innerHTML = `
         <input type="text" placeholder="Adicionar item..." required />
-        <input type="url" placeholder="Link (opcional, ex: https://...)" />
+        <input type="url" placeholder="Link (opcional)" />
+        <input type="number" step="0.01" min="0" placeholder="R$ Valor" />
         <button type="submit" class="btn-primary">+</button>
       `;
 
@@ -850,6 +1328,7 @@
         const inputs = addForm.querySelectorAll("input");
         const nome = inputs[0].value.trim();
         let link = inputs[1].value.trim();
+        const valorRaw = inputs[2].value.trim();
         
         if (!nome) return;
 
@@ -859,9 +1338,13 @@
 
         inputs[0].value = "";
         inputs[1].value = "";
+        inputs[2].value = "";
 
         const novoItem = { nome, p1: false, p2: false };
         if (link) novoItem.link = link;
+        if (valorRaw !== "" && !isNaN(parseFloat(valorRaw))) {
+          novoItem.valor = parseFloat(valorRaw);
+        }
 
         const updatedItens = [...itens, novoItem];
         await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
