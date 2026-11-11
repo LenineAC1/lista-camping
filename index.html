@@ -103,10 +103,40 @@
       border-radius: 10px;
       padding: 12px 16px;
       margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .names-config-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .names-config-body {
       display: flex;
       gap: 16px;
       align-items: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      margin-top: 12px;
+    }
+
+    .names-config-box.collapsed .names-config-body {
+      display: none;
+    }
+
+    .names-config-box.collapsed .names-toggle-icon {
+      transform: rotate(-90deg);
+    }
+
+    .names-toggle-icon {
+      transition: transform 0.25s ease;
+      font-size: 0.8rem;
+      color: var(--muted);
+      display: inline-block;
     }
 
     .names-config-box label {
@@ -593,10 +623,11 @@
     }
 
     .trip-toggle-icon {
-      transition: transform 0.2s;
-      font-size: 0.85rem;
+      transition: transform 0.25s ease;
+      font-size: 0.8rem;
       color: var(--muted);
       margin-left: 6px;
+      display: inline-block;
     }
 
     .trip-calendar-body {
@@ -838,9 +869,12 @@
       }
 
       .names-config-box {
+        padding: 12px;
+      }
+
+      .names-config-body {
         flex-direction: column;
         gap: 10px;
-        padding: 12px;
       }
 
       .new-section-box {
@@ -996,15 +1030,21 @@
     </header>
 
     <!-- Campos para personalizar os nomes das 2 pessoas -->
-    <div class="names-config-box">
-      <label>
-        Nome Grupo 1:
-        <input type="text" id="nameP1Input" value="Pessoa 1" />
-      </label>
-      <label>
-        Nome Grupo 2:
-        <input type="text" id="nameP2Input" value="Pessoa 2" />
-      </label>
+    <div class="names-config-box" id="namesConfigBox">
+      <div class="names-config-header" id="namesConfigHeader">
+        <span>👥 Nomes dos Grupos</span>
+        <span class="names-toggle-icon" id="namesToggleIcon">▼</span>
+      </div>
+      <div class="names-config-body" id="namesConfigBody">
+        <label>
+          Nome Grupo 1:
+          <input type="text" id="nameP1Input" value="Pessoa 1" />
+        </label>
+        <label>
+          Nome Grupo 2:
+          <input type="text" id="nameP2Input" value="Pessoa 2" />
+        </label>
+      </div>
     </div>
 
     <!-- Calendário do Acampamento / Viagem -->
@@ -1101,6 +1141,22 @@
     const layoutToggle = document.getElementById("layoutToggle");
     const nameP1Input = document.getElementById("nameP1Input");
     const nameP2Input = document.getElementById("nameP2Input");
+
+    // Gerenciamento da Seção de Nomes dos Grupos (Esconder/Expandir)
+    const namesConfigBox = document.getElementById("namesConfigBox");
+    const namesConfigHeader = document.getElementById("namesConfigHeader");
+
+    if (localStorage.getItem("namesConfigCollapsed") === "true") {
+      namesConfigBox.classList.add("collapsed");
+    }
+
+    namesConfigHeader.addEventListener("click", () => {
+      namesConfigBox.classList.toggle("collapsed");
+      localStorage.setItem(
+        "namesConfigCollapsed",
+        namesConfigBox.classList.contains("collapsed")
+      );
+    });
 
     // Gerenciamento do Calendário da Viagem (Esconder/Expandir e Ações)
     const tripCalendarCard = document.getElementById("tripCalendarCard");
