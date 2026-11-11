@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Checklist Compartilhado</title>
+  <title>Checklist para acampamento</title>
   <style>
     :root {
       --bg: #f4f6f8;
@@ -11,8 +11,8 @@
       --text: #1e293b;
       --muted: #64748b;
       --border: #e2e8f0;
-      --primary: #16a34a;
-      --primary-hover: #15803d;
+      --primary: #831843;
+      --primary-hover: #9f1239;
       --danger: #ef4444;
       --item-hover: #f8fafc;
       --link-color: #2563eb;
@@ -24,8 +24,8 @@
       --text: #f1f5f9;
       --muted: #94a3b8;
       --border: #334155;
-      --primary: #22c55e;
-      --primary-hover: #16a34a;
+      --primary: #be123c;
+      --primary-hover: #e11d48;
       --danger: #f87171;
       --item-hover: #273549;
       --link-color: #60a5fa;
@@ -54,7 +54,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     header h1 {
@@ -84,6 +84,43 @@
       border-radius: 8px;
       cursor: pointer;
       font-size: 0.9rem;
+    }
+
+    /* Caixa de configuração dos nomes das pessoas */
+    .names-config-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .names-config-box label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .names-config-box input {
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .names-config-box input:focus {
+      border-color: var(--primary);
     }
 
     .new-section-box {
@@ -148,6 +185,7 @@
       align-items: center;
       gap: 10px;
       flex: 1;
+      flex-wrap: wrap;
     }
 
     .section-title {
@@ -165,11 +203,16 @@
       border-color: var(--border);
     }
 
+    .badges-group {
+      display: flex;
+      gap: 6px;
+    }
+
     .badge {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       background: var(--bg);
       color: var(--muted);
-      padding: 2px 8px;
+      padding: 2px 6px;
       border-radius: 999px;
       border: 1px solid var(--border);
     }
@@ -208,22 +251,13 @@
       background: var(--item-hover);
     }
 
-    .item-label {
+    .item-content {
       display: flex;
       align-items: center;
-      gap: 10px;
-      cursor: pointer;
+      justify-content: space-between;
       flex: 1;
-      user-select: none;
       min-width: 0;
-    }
-
-    .item-label input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      accent-color: var(--primary);
-      cursor: pointer;
-      flex-shrink: 0;
+      gap: 12px;
     }
 
     .item-text {
@@ -232,6 +266,7 @@
       padding: 2px 4px;
       border-radius: 4px;
       border: 1px dashed transparent;
+      flex: 1;
     }
 
     .item-text:hover {
@@ -239,9 +274,33 @@
       border-color: var(--border);
     }
 
-    .item-text.done {
+    .item-text.done-both {
       text-decoration: line-through;
       color: var(--muted);
+    }
+
+    .checks-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .check-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .check-wrapper input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+      cursor: pointer;
     }
 
     .item-actions {
@@ -308,10 +367,22 @@
     <header>
       <h1>
         <span id="statusDot" class="status-dot" title="Status da sincronização"></span>
-        Lista Compartilhada
+        Checklist para acampamento
       </h1>
       <button id="themeToggle" class="theme-btn">🌓 Tema</button>
     </header>
+
+    <!-- Campos para personalizar os nomes das 2 pessoas -->
+    <div class="names-config-box">
+      <label>
+        Nome Pessoa 1:
+        <input type="text" id="nameP1Input" value="Pessoa 1" />
+      </label>
+      <label>
+        Nome Pessoa 2:
+        <input type="text" id="nameP2Input" value="Pessoa 2" />
+      </label>
+    </div>
 
     <form id="newSectionForm" class="new-section-box">
       <input
@@ -362,6 +433,24 @@
     const sectionInput = document.getElementById("sectionInput");
     const statusDot = document.getElementById("statusDot");
     const themeToggle = document.getElementById("themeToggle");
+    const nameP1Input = document.getElementById("nameP1Input");
+    const nameP2Input = document.getElementById("nameP2Input");
+
+    // Carregar nomes salvos no navegador (LocalStorage)
+    nameP1Input.value = localStorage.getItem("nameP1") || "Sabrina";
+    nameP2Input.value = localStorage.getItem("nameP2") || "Pessoa 2";
+
+    nameP1Input.addEventListener("input", () => {
+      localStorage.setItem("nameP1", nameP1Input.value || "P1");
+      renderCachedSections();
+    });
+
+    nameP2Input.addEventListener("input", () => {
+      localStorage.setItem("nameP2", nameP2Input.value || "P2");
+      renderCachedSections();
+    });
+
+    let lastSnapshotDocs = [];
 
     // Alternar Tema Claro/Escuro
     if (localStorage.getItem("theme") === "dark") {
@@ -400,7 +489,8 @@
       q,
       (snapshot) => {
         statusDot.classList.add("online");
-        renderSections(snapshot.docs);
+        lastSnapshotDocs = snapshot.docs;
+        renderSections(lastSnapshotDocs);
       },
       (error) => {
         statusDot.classList.remove("online");
@@ -413,7 +503,16 @@
       }
     );
 
+    function renderCachedSections() {
+      if (lastSnapshotDocs.length > 0) {
+        renderSections(lastSnapshotDocs);
+      }
+    }
+
     function renderSections(docs) {
+      const name1 = nameP1Input.value.trim() || "P1";
+      const name2 = nameP2Input.value.trim() || "P2";
+
       if (docs.length === 0) {
         sectionsContainer.innerHTML = `
           <div class="empty-state">
@@ -429,7 +528,9 @@
         const data = docSnap.data();
         const sectionId = docSnap.id;
         const itens = Array.isArray(data.itens) ? data.itens : [];
-        const concluidos = itens.filter((i) => i.concluido).length;
+        
+        const p1Concluidos = itens.filter((i) => i.p1).length;
+        const p2Concluidos = itens.filter((i) => i.p2).length;
 
         const card = document.createElement("div");
         card.className = "section-card";
@@ -446,7 +547,6 @@
         titleSpan.textContent = data.titulo;
         titleSpan.title = "Clique para renomear a seção";
 
-        // Funcionalidade de renomear seção ao clicar
         titleSpan.addEventListener("click", () => {
           const novoTitulo = prompt("Renomear seção:", data.titulo);
           if (novoTitulo !== null && novoTitulo.trim() !== "") {
@@ -454,12 +554,15 @@
           }
         });
 
-        const badge = document.createElement("span");
-        badge.className = "badge";
-        badge.textContent = `${concluidos}/${itens.length}`;
+        const badgesGroup = document.createElement("div");
+        badgesGroup.className = "badges-group";
+        badgesGroup.innerHTML = `
+          <span class="badge">${name1}: ${p1Concluidos}/${itens.length}</span>
+          <span class="badge">${name2}: ${p2Concluidos}/${itens.length}</span>
+        `;
 
         titleGroup.appendChild(titleSpan);
-        titleGroup.appendChild(badge);
+        titleGroup.appendChild(badgesGroup);
 
         const deleteSectionBtn = document.createElement("button");
         deleteSectionBtn.className = "btn-icon-danger";
@@ -482,24 +585,15 @@
           const li = document.createElement("li");
           li.className = "item-row";
 
-          const label = document.createElement("label");
-          label.className = "item-label";
-
-          const checkbox = document.createElement("input");
-          checkbox.type = "checkbox";
-          checkbox.checked = !!item.concluido;
-          checkbox.addEventListener("change", async () => {
-            const updatedItens = [...itens];
-            updatedItens[index] = { ...item, concluido: checkbox.checked };
-            await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
-          });
+          const itemContent = document.createElement("div");
+          itemContent.className = "item-content";
 
           const span = document.createElement("span");
-          span.className = `item-text ${item.concluido ? "done" : ""}`;
+          const bothDone = item.p1 && item.p2;
+          span.className = `item-text ${bothDone ? "done-both" : ""}`;
           span.textContent = item.nome;
           span.title = "Clique para editar o item";
 
-          // Funcionalidade de renomear item ao clicar
           span.addEventListener("click", (e) => {
             e.preventDefault();
             const novoNome = prompt("Editar item:", item.nome);
@@ -510,13 +604,48 @@
             }
           });
 
-          label.appendChild(checkbox);
-          label.appendChild(span);
+          // Grupo de checkboxes para os nomes personalizados
+          const checksGroup = document.createElement("div");
+          checksGroup.className = "checks-group";
+
+          // Checkbox Pessoa 1
+          const labelP1 = document.createElement("label");
+          labelP1.className = "check-wrapper";
+          const checkP1 = document.createElement("input");
+          checkP1.type = "checkbox";
+          checkP1.checked = !!item.p1;
+          checkP1.addEventListener("change", async () => {
+            const updatedItens = [...itens];
+            updatedItens[index] = { ...item, p1: checkP1.checked };
+            await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
+          });
+          labelP1.appendChild(checkP1);
+          labelP1.appendChild(document.createTextNode(" " + name1));
+
+          // Checkbox Pessoa 2
+          const labelP2 = document.createElement("label");
+          labelP2.className = "check-wrapper";
+          const checkP2 = document.createElement("input");
+          checkP2.type = "checkbox";
+          checkP2.checked = !!item.p2;
+          checkP2.addEventListener("change", async () => {
+            const updatedItens = multimappedItens => updatedItens; // no-op safeguard
+            const updatedItensList = [...itens];
+            updatedItensList[index] = { ...item, p2: checkP2.checked };
+            await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItensList });
+          });
+          labelP2.appendChild(checkP2);
+          labelP2.appendChild(document.createTextNode(" " + name2));
+
+          checksGroup.appendChild(labelP1);
+          checksGroup.appendChild(labelP2);
+
+          itemContent.appendChild(span);
+          itemContent.appendChild(checksGroup);
 
           const actionsDiv = document.createElement("div");
           actionsDiv.className = "item-actions";
 
-          // Botão de link se existir
           if (item.link) {
             const linkBtn = document.createElement("a");
             linkBtn.className = "btn-link-icon";
@@ -539,7 +668,7 @@
 
           actionsDiv.appendChild(delItemBtn);
 
-          li.appendChild(label);
+          li.appendChild(itemContent);
           li.appendChild(actionsDiv);
           ul.appendChild(li);
         });
@@ -561,7 +690,6 @@
           
           if (!nome) return;
 
-          // Validação simples de link caso o usuário esqueça o https://
           if (link && !link.startsWith("http://") && !link.startsWith("https://")) {
             link = "https://" + link;
           }
@@ -569,7 +697,7 @@
           inputs[0].value = "";
           inputs[1].value = "";
 
-          const novoItem = { nome, concluido: false };
+          const novoItem = { nome, p1: false, p2: false };
           if (link) novoItem.link = link;
 
           const updatedItens = [...itens, novoItem];
