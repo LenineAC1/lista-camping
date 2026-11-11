@@ -563,6 +563,243 @@
       font-size: 0.95rem;
     }
 
+    /* Calendário do Acampamento */
+    .trip-calendar-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    }
+
+    .trip-calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0;
+      flex-wrap: wrap;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .trip-calendar-card.collapsed .trip-calendar-body {
+      display: none;
+    }
+
+    .trip-calendar-card.collapsed .trip-toggle-icon {
+      transform: rotate(-90deg);
+    }
+
+    .trip-toggle-icon {
+      transition: transform 0.2s;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-left: 6px;
+    }
+
+    .trip-calendar-body {
+      margin-top: 14px;
+    }
+
+    .trip-badge-range {
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: rgba(131, 24, 67, 0.1);
+      color: var(--primary);
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(131, 24, 67, 0.2);
+    }
+
+    body.dark .trip-badge-range {
+      background: rgba(190, 18, 60, 0.18);
+      border-color: rgba(190, 18, 60, 0.35);
+    }
+
+    .calendar-timeline {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .calendar-day-box {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 6px;
+      text-align: center;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 4px;
+      transition: all 0.15s;
+    }
+
+    .calendar-day-box.camp-active {
+      border-color: var(--primary);
+      background: rgba(131, 24, 67, 0.05);
+    }
+
+    body.dark .calendar-day-box.camp-active {
+      background: rgba(190, 18, 60, 0.15);
+    }
+
+    .calendar-day-box.travel-day {
+      border-color: #f59e0b;
+      background: rgba(245, 158, 11, 0.08);
+    }
+
+    body.dark .calendar-day-box.travel-day {
+      border-color: #f59e0b;
+      background: rgba(245, 158, 11, 0.15);
+    }
+
+    .cal-weekday {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .cal-day-num {
+      font-size: 1.25rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .cal-month {
+      font-size: 0.7rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .cal-day-tags {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      width: 100%;
+      margin-top: 2px;
+    }
+
+    .cal-day-tag {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 4px;
+      border-radius: 4px;
+      line-height: 1.1;
+      width: 100%;
+      word-break: break-word;
+    }
+
+    .cal-day-tag.tag-departure {
+      background: #f59e0b;
+      color: #fff;
+    }
+
+    .cal-day-tag.tag-camp {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .cal-day-tag.tag-return {
+      background: #0284c7;
+      color: #fff;
+    }
+
+    .trip-events-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-top: 1px dashed var(--border);
+      padding-top: 12px;
+      margin-bottom: 12px;
+    }
+
+    .trip-event-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.88rem;
+      padding: 6px 10px;
+      background: var(--bg);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .trip-event-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 0;
+      flex-wrap: wrap;
+    }
+
+    .trip-event-emoji {
+      font-size: 1.15rem;
+      line-height: 1;
+    }
+
+    .trip-event-date {
+      font-weight: 700;
+      color: var(--primary);
+      white-space: nowrap;
+      min-width: 85px;
+    }
+
+    .trip-event-desc {
+      color: var(--text);
+      word-break: break-word;
+      flex: 1;
+    }
+
+    .trip-add-event-form {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      background: var(--bg);
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .trip-add-event-form select,
+    .trip-add-event-form input {
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--card);
+      color: var(--text);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .trip-add-event-form select:focus,
+    .trip-add-event-form input:focus {
+      border-color: var(--primary);
+    }
+
+    .trip-add-event-form .emoji-input {
+      width: 70px;
+      text-align: center;
+      font-size: 1rem;
+    }
+
+    .trip-add-event-form .date-select {
+      min-width: 130px;
+    }
+
+    .trip-add-event-form .desc-input {
+      flex: 1;
+      min-width: 150px;
+    }
+
     .empty-state {
       text-align: center;
       color: var(--muted);
@@ -706,6 +943,38 @@
         -webkit-overflow-scrolling: touch;
       }
 
+      .calendar-timeline {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+      }
+
+      .calendar-day-box {
+        padding: 8px 4px;
+      }
+
+      .cal-day-num {
+        font-size: 1.1rem;
+      }
+
+      .trip-event-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+
+      .trip-add-event-form {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .trip-add-event-form .emoji-input,
+      .trip-add-event-form .date-select,
+      .trip-add-event-form .desc-input,
+      .trip-add-event-form button {
+        width: 100%;
+        min-height: 40px;
+      }
+
       .tab-btn {
         padding: 8px 12px;
         font-size: 0.85rem;
@@ -738,6 +1007,44 @@
       </label>
     </div>
 
+    <!-- Calendário do Acampamento / Viagem -->
+    <section class="trip-calendar-card" id="tripCalendarCard" aria-label="Calendário do Acampamento">
+      <div class="trip-calendar-header" id="tripCalendarHeader">
+        <div class="trip-calendar-title">
+          <span>📅 Calendário da Viagem</span>
+          <span class="trip-toggle-icon" id="tripToggleIcon">▼</span>
+        </div>
+        <span class="trip-badge-range">29/12/2026 a 03/01/2027 • 6 dias</span>
+      </div>
+
+      <div class="trip-calendar-body" id="tripCalendarBody">
+        <!-- Grade dos dias com destaque -->
+        <div class="calendar-timeline" id="calendarTimeline">
+          <!-- Gerado dinamicamente via JS -->
+        </div>
+
+        <!-- Lista de ações/eventos do roteiro -->
+        <div class="trip-events-list" id="tripEventsList">
+          <!-- Gerado dinamicamente via JS -->
+        </div>
+
+        <!-- Formulário para adicionar nova ação ao calendário -->
+        <form id="tripAddEventForm" class="trip-add-event-form">
+          <input type="text" id="tripEmojiInput" class="emoji-input" placeholder="Emoji" maxlength="4" value="📍" title="Emoji do evento (ex: 🚗, 🏕️, 🎒, 🍖, 🛒)" />
+          <select id="tripDateSelect" class="date-select" required title="Selecione a data da ação (29/12 a 03/01)">
+            <option value="2026-12-29">29/12/2026 (Ter)</option>
+            <option value="2026-12-30">30/12/2026 (Qua)</option>
+            <option value="2026-12-31">31/12/2026 (Qui)</option>
+            <option value="2027-01-01">01/01/2027 (Sex)</option>
+            <option value="2027-01-02">02/01/2027 (Sáb)</option>
+            <option value="2027-01-03">03/01/2027 (Dom)</option>
+          </select>
+          <input type="text" id="tripDescInput" class="desc-input" placeholder="Descrição da ação..." required />
+          <button type="submit" class="btn-primary" style="padding: 8px 14px;">+ Ação</button>
+        </form>
+      </div>
+    </section>
+
     <form id="newSectionForm" class="new-section-box">
       <input
         type="text"
@@ -763,6 +1070,8 @@
       addDoc,
       updateDoc,
       deleteDoc,
+      setDoc,
+      getDoc,
       doc,
       onSnapshot,
       query,
@@ -792,6 +1101,190 @@
     const layoutToggle = document.getElementById("layoutToggle");
     const nameP1Input = document.getElementById("nameP1Input");
     const nameP2Input = document.getElementById("nameP2Input");
+
+    // Gerenciamento do Calendário da Viagem (Esconder/Expandir e Ações)
+    const tripCalendarCard = document.getElementById("tripCalendarCard");
+    const tripCalendarHeader = document.getElementById("tripCalendarHeader");
+    const calendarTimeline = document.getElementById("calendarTimeline");
+    const tripEventsList = document.getElementById("tripEventsList");
+    const tripAddEventForm = document.getElementById("tripAddEventForm");
+    const tripEmojiInput = document.getElementById("tripEmojiInput");
+    const tripDateSelect = document.getElementById("tripDateSelect");
+    const tripDescInput = document.getElementById("tripDescInput");
+
+    // Estado de colapso do calendário no localStorage
+    if (localStorage.getItem("tripCalendarCollapsed") === "true") {
+      tripCalendarCard.classList.add("collapsed");
+    }
+
+    tripCalendarHeader.addEventListener("click", () => {
+      tripCalendarCard.classList.toggle("collapsed");
+      localStorage.setItem(
+        "tripCalendarCollapsed",
+        tripCalendarCard.classList.contains("collapsed")
+      );
+    });
+
+    // Referência do documento de eventos do calendário no Firestore
+    const tripCalendarDocRef = doc(db, "configuracoes", "calendarioViagem");
+
+    // Eventos padrão caso o Firestore ainda esteja vazio
+    const defaultTripEvents = [
+      { id: "e1", emoji: "🚗", data: "2026-12-29", desc: "Pegar o carro em Itanhaém e ir para São Tomé" },
+      { id: "e2", emoji: "🎒", data: "2027-01-02", desc: "Ir embora de São Tomé" },
+      { id: "e3", emoji: "🔑", data: "2027-01-03", desc: "Devolver o Carro" }
+    ];
+
+    let currentTripEvents = [];
+
+    // Escutar eventos do calendário em tempo real no Firestore
+    onSnapshot(tripCalendarDocRef, async (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        currentTripEvents = Array.isArray(data.eventos) ? data.eventos : [];
+        renderCalendar();
+      } else {
+        // Inicializar documento com os eventos padrão na primeira vez
+        try {
+          await setDoc(tripCalendarDocRef, {
+            eventos: defaultTripEvents,
+            atualizadoEm: serverTimestamp()
+          });
+        } catch (err) {
+          console.error("Erro ao inicializar calendário no Firestore:", err);
+          currentTripEvents = defaultTripEvents;
+          renderCalendar();
+        }
+      }
+    }, (error) => {
+      console.error("Erro ao carregar calendário do Firestore:", error);
+      currentTripEvents = defaultTripEvents;
+      renderCalendar();
+    });
+
+    async function saveTripEvents(events) {
+      try {
+        await setDoc(tripCalendarDocRef, {
+          eventos: events,
+          atualizadoEm: serverTimestamp()
+        }, { merge: true });
+      } catch (err) {
+        alert("Erro ao salvar ação no calendário. Verifique a conexão.");
+        console.error("Erro ao salvar tripEvents no Firestore:", err);
+      }
+    }
+
+    const tripDaysInfo = [
+      { date: "2026-12-29", weekday: "Ter", dayNum: "29", month: "Dez 2026", defaultType: "travel-day" },
+      { date: "2026-12-30", weekday: "Qua", dayNum: "30", month: "Dez 2026", defaultType: "camp-active" },
+      { date: "2026-12-31", weekday: "Qui", dayNum: "31", month: "Dez 2026", defaultType: "camp-active" },
+      { date: "2027-01-01", weekday: "Sex", dayNum: "01", month: "Jan 2027", defaultType: "camp-active" },
+      { date: "2027-01-02", weekday: "Sáb", dayNum: "02", month: "Jan 2027", defaultType: "travel-day" },
+      { date: "2027-01-03", weekday: "Dom", dayNum: "03", month: "Jan 2027", defaultType: "travel-day" }
+    ];
+
+    function formatDateBR(dateStr) {
+      const [ano, mes, dia] = dateStr.split("-");
+      return `${dia}/${mes}/${ano}`;
+    }
+
+    function renderCalendar() {
+      const events = currentTripEvents;
+
+      // Renderizar Grade Timeline
+      calendarTimeline.innerHTML = "";
+      tripDaysInfo.forEach((day) => {
+        const dayEvents = events.filter((e) => e.data === day.date);
+        const dayBox = document.createElement("div");
+        dayBox.className = `calendar-day-box ${day.defaultType}`;
+
+        let tagsHtml = "";
+        if (dayEvents.length > 0) {
+          tagsHtml = dayEvents
+            .map((ev) => {
+              const tagClass = ev.data === "2027-01-03" ? "tag-return" : (ev.data === "2026-12-29" || ev.data === "2027-01-02" ? "tag-departure" : "tag-camp");
+              return `<span class="cal-day-tag ${tagClass}" title="${ev.emoji} ${ev.desc}">${ev.emoji} ${ev.desc.substring(0, 16)}${ev.desc.length > 16 ? "..." : ""}</span>`;
+            })
+            .join("");
+        }
+
+        dayBox.innerHTML = `
+          <span class="cal-weekday">${day.weekday}</span>
+          <span class="cal-day-num">${day.dayNum}</span>
+          <span class="cal-month">${day.month}</span>
+          <div class="cal-day-tags">${tagsHtml}</div>
+        `;
+        calendarTimeline.appendChild(dayBox);
+      });
+
+      // Renderizar Lista de Ações
+      tripEventsList.innerHTML = "";
+      if (events.length === 0) {
+        tripEventsList.innerHTML = `<div style="color: var(--muted); font-size: 0.85rem; padding: 4px;">Nenhuma ação cadastrada para os dias 29 a 03. Adicione acima!</div>`;
+      } else {
+        // Ordenar por data
+        const sortedEvents = [...events].sort((a, b) => a.data.localeCompare(b.data));
+
+        sortedEvents.forEach((ev) => {
+          const itemEl = document.createElement("div");
+          itemEl.className = "trip-event-item";
+
+          const infoDiv = document.createElement("div");
+          infoDiv.className = "trip-event-info";
+
+          const emojiSpan = document.createElement("span");
+          emojiSpan.className = "trip-event-emoji";
+          emojiSpan.textContent = ev.emoji || "📍";
+
+          const dateSpan = document.createElement("span");
+          dateSpan.className = "trip-event-date";
+          dateSpan.textContent = formatDateBR(ev.data) + ":";
+
+          const descSpan = document.createElement("span");
+          descSpan.className = "trip-event-desc";
+          descSpan.textContent = ev.desc;
+
+          infoDiv.appendChild(emojiSpan);
+          infoDiv.appendChild(dateSpan);
+          infoDiv.appendChild(descSpan);
+
+          const delBtn = document.createElement("button");
+          delBtn.className = "btn-icon-danger";
+          delBtn.textContent = "✕";
+          delBtn.title = "Remover ação do calendário";
+          delBtn.addEventListener("click", async () => {
+            const updated = currentTripEvents.filter((x) => x.id !== ev.id);
+            await saveTripEvents(updated);
+          });
+
+          itemEl.appendChild(infoDiv);
+          itemEl.appendChild(delBtn);
+          tripEventsList.appendChild(itemEl);
+        });
+      }
+    }
+
+    // Formulário para adicionar nova ação
+    tripAddEventForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const emoji = tripEmojiInput.value.trim() || "📍";
+      const data = tripDateSelect.value;
+      const desc = tripDescInput.value.trim();
+
+      if (!data || !desc) return;
+
+      const newEvent = {
+        id: "ev_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
+        emoji,
+        data,
+        desc
+      };
+
+      const updated = [...currentTripEvents, newEvent];
+      await saveTripEvents(updated);
+
+      tripDescInput.value = "";
+    });
 
     // Carregar configurações salvas no navegador (LocalStorage)
     nameP1Input.value = localStorage.getItem("nameP1") || "Grupo 1";
