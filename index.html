@@ -18,19 +18,6 @@
       --link-color: #2563eb;
     }
 
-    body.dark {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --text: #f1f5f9;
-      --muted: #94a3b8;
-      --border: #334155;
-      --primary: #be123c;
-      --primary-hover: #e11d48;
-      --danger: #f87171;
-      --item-hover: #273549;
-      --link-color: #60a5fa;
-    }
-
     * {
       box-sizing: border-box;
       margin: 0;
@@ -86,7 +73,7 @@
       gap: 8px;
     }
 
-    .theme-btn, .layout-btn {
+    .layout-btn {
       background: var(--card);
       border: 1px solid var(--border);
       color: var(--text);
@@ -418,11 +405,6 @@
       transition: background 0.15s;
     }
 
-    body.dark .item-valor-tag {
-      color: #34d399;
-      background: rgba(16, 185, 129, 0.2);
-    }
-
     .item-valor-tag.empty {
       color: var(--muted);
       background: var(--bg);
@@ -439,11 +421,6 @@
       margin-left: auto;
       border-color: #10b981;
       color: #059669;
-    }
-
-    body.dark .tab-btn.tab-btn-finance {
-      color: #34d399;
-      border-color: #059669;
     }
 
     .tab-btn.tab-btn-finance.active {
@@ -644,11 +621,6 @@
       border: 1px solid rgba(131, 24, 67, 0.2);
     }
 
-    body.dark .trip-badge-range {
-      background: rgba(190, 18, 60, 0.18);
-      border-color: rgba(190, 18, 60, 0.35);
-    }
-
     .calendar-timeline {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
@@ -675,18 +647,9 @@
       background: rgba(131, 24, 67, 0.05);
     }
 
-    body.dark .calendar-day-box.camp-active {
-      background: rgba(190, 18, 60, 0.15);
-    }
-
     .calendar-day-box.travel-day {
       border-color: #f59e0b;
       background: rgba(245, 158, 11, 0.08);
-    }
-
-    body.dark .calendar-day-box.travel-day {
-      border-color: #f59e0b;
-      background: rgba(245, 158, 11, 0.15);
     }
 
     .cal-weekday {
@@ -1025,7 +988,6 @@
       </h1>
       <div class="header-actions">
         <button id="layoutToggle" class="layout-btn" title="Alternar Layout">📑 Abas</button>
-        <button id="themeToggle" class="theme-btn" title="Alternar Tema">🌓 Tema</button>
       </div>
     </header>
 
@@ -1137,7 +1099,6 @@
     const newSectionForm = document.getElementById("newSectionForm");
     const sectionInput = document.getElementById("sectionInput");
     const statusDot = document.getElementById("statusDot");
-    const themeToggle = document.getElementById("themeToggle");
     const layoutToggle = document.getElementById("layoutToggle");
     const nameP1Input = document.getElementById("nameP1Input");
     const nameP2Input = document.getElementById("nameP2Input");
@@ -1362,18 +1323,6 @@
     });
 
     let lastSnapshotDocs = [];
-
-    // Alternar Tema Claro/Escuro
-    if (localStorage.getItem("theme") === "dark") {
-      document.body.classList.add("dark");
-    }
-    themeToggle.addEventListener("click", () => {
-      document.body.classList.toggle("dark");
-      localStorage.setItem(
-        "theme",
-        document.body.classList.contains("dark") ? "dark" : "light"
-      );
-    });
 
     // Alternar Layout (Lista vs Abas)
     layoutToggle.addEventListener("click", () => {
