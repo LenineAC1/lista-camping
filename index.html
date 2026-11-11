@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -15,6 +15,7 @@
       --primary-hover: #15803d;
       --danger: #ef4444;
       --item-hover: #f8fafc;
+      --link-color: #2563eb;
     }
 
     body.dark {
@@ -27,6 +28,7 @@
       --primary-hover: #16a34a;
       --danger: #f87171;
       --item-hover: #273549;
+      --link-color: #60a5fa;
     }
 
     * {
@@ -68,7 +70,6 @@
       border-radius: 50%;
       background: #eab308;
       display: inline-block;
-      title: "Conectando...";
     }
 
     .status-dot.online {
@@ -91,8 +92,7 @@
       margin-bottom: 24px;
     }
 
-    input[type="text"] {
-      flex: 1;
+    input[type="text"], input[type="url"] {
       padding: 12px 14px;
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -102,8 +102,12 @@
       outline: none;
     }
 
-    input[type="text"]:focus {
+    input[type="text"]:focus, input[type="url"]:focus {
       border-color: var(--primary);
+    }
+
+    .new-section-box input[type="text"] {
+      flex: 1;
     }
 
     button.btn-primary {
@@ -143,11 +147,22 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      flex: 1;
     }
 
     .section-title {
       font-size: 1.15rem;
       font-weight: 700;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px dashed transparent;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .section-title:hover {
+      background: var(--item-hover);
+      border-color: var(--border);
     }
 
     .badge {
@@ -186,6 +201,7 @@
       padding: 8px 6px;
       border-radius: 6px;
       transition: background 0.15s;
+      gap: 8px;
     }
 
     .item-row:hover {
@@ -199,6 +215,7 @@
       cursor: pointer;
       flex: 1;
       user-select: none;
+      min-width: 0;
     }
 
     .item-label input[type="checkbox"] {
@@ -206,6 +223,20 @@
       height: 18px;
       accent-color: var(--primary);
       cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .item-text {
+      word-break: break-word;
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+      border: 1px dashed transparent;
+    }
+
+    .item-text:hover {
+      background: var(--bg);
+      border-color: var(--border);
     }
 
     .item-text.done {
@@ -213,12 +244,46 @@
       color: var(--muted);
     }
 
+    .item-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .btn-link-icon {
+      background: transparent;
+      border: none;
+      color: var(--link-color);
+      cursor: pointer;
+      font-size: 0.95rem;
+      padding: 4px 6px;
+      border-radius: 6px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .btn-link-icon:hover {
+      background: rgba(37, 99, 235, 0.1);
+    }
+
     .add-item-form {
       display: flex;
       gap: 8px;
+      flex-wrap: wrap;
     }
 
-    .add-item-form input {
+    .add-item-form input[type="text"] {
+      flex: 2;
+      min-width: 140px;
+      padding: 9px 12px;
+      font-size: 0.95rem;
+    }
+
+    .add-item-form input[type="url"] {
+      flex: 1.5;
+      min-width: 120px;
       padding: 9px 12px;
       font-size: 0.95rem;
     }
@@ -372,19 +437,42 @@
         // Cabeçalho da seção
         const header = document.createElement("div");
         header.className = "section-header";
-        header.innerHTML = `
-          <div class="section-title-group">
-            <span class="section-title">${escapeHTML(data.titulo)}</span>
-            <span class="badge">${concluidos}/${itens.length}</span>
-          </div>
-          <button class="btn-icon-danger" title="Excluir seção">🗑️</button>
-        `;
+        
+        const titleGroup = document.createElement("div");
+        titleGroup.className = "section-title-group";
 
-        header.querySelector("button").addEventListener("click", async () => {
+        const titleSpan = document.createElement("span");
+        titleSpan.className = "section-title";
+        titleSpan.textContent = data.titulo;
+        titleSpan.title = "Clique para renomear a seção";
+
+        // Funcionalidade de renomear seção ao clicar
+        titleSpan.addEventListener("click", () => {
+          const novoTitulo = prompt("Renomear seção:", data.titulo);
+          if (novoTitulo !== null && novoTitulo.trim() !== "") {
+            updateDoc(doc(db, "secoes", sectionId), { titulo: novoTitulo.trim() });
+          }
+        });
+
+        const badge = document.createElement("span");
+        badge.className = "badge";
+        badge.textContent = `${concluidos}/${itens.length}`;
+
+        titleGroup.appendChild(titleSpan);
+        titleGroup.appendChild(badge);
+
+        const deleteSectionBtn = document.createElement("button");
+        deleteSectionBtn.className = "btn-icon-danger";
+        deleteSectionBtn.textContent = "🗑️";
+        deleteSectionBtn.title = "Excluir seção";
+        deleteSectionBtn.addEventListener("click", async () => {
           if (confirm(`Excluir a seção "${data.titulo}" e todos os seus itens?`)) {
             await deleteDoc(doc(db, "secoes", sectionId));
           }
         });
+
+        header.appendChild(titleGroup);
+        header.appendChild(deleteSectionBtn);
 
         // Lista de itens
         const ul = document.createElement("ul");
@@ -409,9 +497,36 @@
           const span = document.createElement("span");
           span.className = `item-text ${item.concluido ? "done" : ""}`;
           span.textContent = item.nome;
+          span.title = "Clique para editar o item";
+
+          // Funcionalidade de renomear item ao clicar
+          span.addEventListener("click", (e) => {
+            e.preventDefault();
+            const novoNome = prompt("Editar item:", item.nome);
+            if (novoNome !== null && novoNome.trim() !== "") {
+              const updatedItens = [...itens];
+              updatedItens[index] = { ...item, nome: novoNome.trim() };
+              updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
+            }
+          });
 
           label.appendChild(checkbox);
           label.appendChild(span);
+
+          const actionsDiv = document.createElement("div");
+          actionsDiv.className = "item-actions";
+
+          // Botão de link se existir
+          if (item.link) {
+            const linkBtn = document.createElement("a");
+            linkBtn.className = "btn-link-icon";
+            linkBtn.href = item.link;
+            linkBtn.target = "_blank";
+            linkBtn.rel = "noopener noreferrer";
+            linkBtn.textContent = "🔗";
+            linkBtn.title = `Abrir link: ${item.link}`;
+            actionsDiv.appendChild(linkBtn);
+          }
 
           const delItemBtn = document.createElement("button");
           delItemBtn.className = "btn-icon-danger";
@@ -422,8 +537,10 @@
             await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
           });
 
+          actionsDiv.appendChild(delItemBtn);
+
           li.appendChild(label);
-          li.appendChild(delItemBtn);
+          li.appendChild(actionsDiv);
           ul.appendChild(li);
         });
 
@@ -432,17 +549,30 @@
         addForm.className = "add-item-form";
         addForm.innerHTML = `
           <input type="text" placeholder="Adicionar item..." required />
+          <input type="url" placeholder="Link (opcional, ex: https://...)" />
           <button type="submit" class="btn-primary">+</button>
         `;
 
         addForm.addEventListener("submit", async (e) => {
           e.preventDefault();
-          const input = addForm.querySelector("input");
-          const nome = input.value.trim();
+          const inputs = addForm.querySelectorAll("input");
+          const nome = inputs[0].value.trim();
+          let link = inputs[1].value.trim();
+          
           if (!nome) return;
 
-          input.value = "";
-          const updatedItens = [...itens, { nome, concluido: false }];
+          // Validação simples de link caso o usuário esqueça o https://
+          if (link && !link.startsWith("http://") && !link.startsWith("https://")) {
+            link = "https://" + link;
+          }
+
+          inputs[0].value = "";
+          inputs[1].value = "";
+
+          const novoItem = { nome, concluido: false };
+          if (link) novoItem.link = link;
+
+          const updatedItens = [...itens, novoItem];
           await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
         });
 
@@ -451,16 +581,6 @@
         card.appendChild(addForm);
         sectionsContainer.appendChild(card);
       });
-    }
-
-    function escapeHTML(str) {
-      return str.replace(/[&<>'"]/g, (tag) => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        "'": "&#39;",
-        '"': "&quot;"
-      }[tag]));
     }
   </script>
 </body>
