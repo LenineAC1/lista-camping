@@ -160,6 +160,29 @@
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
     }
 
+    .section-card.collapsed .section-body {
+      display: none;
+    }
+
+    .section-card.collapsed .section-header {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .section-card.collapsed .section-toggle-icon {
+      transform: rotate(-90deg);
+    }
+
+    .section-toggle-icon {
+      transition: transform 0.25s ease;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-left: 6px;
+      display: inline-block;
+      user-select: none;
+    }
+
     .section-header {
       display: flex;
       justify-content: space-between;
@@ -167,6 +190,8 @@
       margin-bottom: 12px;
       padding-bottom: 10px;
       border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
     }
 
     .section-title-group {
@@ -1529,9 +1554,14 @@
       const titleSpan = document.createElement("span");
       titleSpan.className = "section-title";
       titleSpan.textContent = data.titulo;
-      titleSpan.title = "Clique para renomear a seção";
+      titleSpan.title = "Dois cliques para renomear a seção";
 
-      titleSpan.addEventListener("click", () => {
+      const toggleIcon = document.createElement("span");
+      toggleIcon.className = "section-toggle-icon";
+      toggleIcon.textContent = "▼";
+
+      titleSpan.addEventListener("dblclick", (e) => {
+        e.stopPropagation();
         const novoTitulo = prompt("Renomear seção:", data.titulo);
         if (novoTitulo !== null && novoTitulo.trim() !== "") {
           updateDoc(doc(db, "secoes", sectionId), { titulo: novoTitulo.trim() });
@@ -1545,20 +1575,59 @@
       `;
 
       titleGroup.appendChild(titleSpan);
+      titleGroup.appendChild(toggleIcon);
       titleGroup.appendChild(badgesGroup);
+
+      const headerActions = document.createElement("div");
+      headerActions.style.display = "flex";
+      headerActions.style.alignItems = "center";
+      headerActions.style.gap = "4px";
+
+      const renameSectionBtn = document.createElement("button");
+      renameSectionBtn.className = "btn-link-icon";
+      renameSectionBtn.textContent = "✏️";
+      renameSectionBtn.title = "Renomear seção";
+      renameSectionBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const novoTitulo = prompt("Renomear seção:", data.titulo);
+        if (novoTitulo !== null && novoTitulo.trim() !== "") {
+          updateDoc(doc(db, "secoes", sectionId), { titulo: novoTitulo.trim() });
+        }
+      });
 
       const deleteSectionBtn = document.createElement("button");
       deleteSectionBtn.className = "btn-icon-danger";
       deleteSectionBtn.textContent = "🗑️";
       deleteSectionBtn.title = "Excluir seção";
-      deleteSectionBtn.addEventListener("click", async () => {
+      deleteSectionBtn.addEventListener("click", async (e) => {
+        e.stopPropagation();
         if (confirm(`Excluir a seção "${data.titulo}" e todos os seus itens?`)) {
           await deleteDoc(doc(db, "secoes", sectionId));
         }
       });
 
+      headerActions.appendChild(renameSectionBtn);
+      headerActions.appendChild(deleteSectionBtn);
+
       header.appendChild(titleGroup);
-      header.appendChild(deleteSectionBtn);
+      header.appendChild(headerActions);
+
+      // Estado de colapso da seção salvo no localStorage
+      const storageKey = `sectionCollapsed_${sectionId}`;
+      if (localStorage.getItem(storageKey) === "true") {
+        card.classList.add("collapsed");
+      }
+
+      header.addEventListener("click", (e) => {
+        // Se clicar em botão de ação ou links, não altera estado de colapso
+        if (e.target.closest("button") || e.target.closest("a")) return;
+        card.classList.toggle("collapsed");
+        localStorage.setItem(storageKey, card.classList.contains("collapsed"));
+      });
+
+      // Corpo da seção (escondido quando colapsado)
+      const sectionBody = document.createElement("div");
+      sectionBody.className = "section-body";
 
       // Lista de itens
       const ul = document.createElement("ul");
@@ -1797,9 +1866,11 @@
         await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
       });
 
+      sectionBody.appendChild(ul);
+      sectionBody.appendChild(addForm);
+
       card.appendChild(header);
-      card.appendChild(ul);
-      card.appendChild(addForm);
+      card.appendChild(sectionBody);
       return card;
     }
   </script>
