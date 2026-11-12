@@ -83,72 +83,6 @@
       font-size: 0.9rem;
     }
 
-    /* Caixa de configuração dos nomes das pessoas */
-    .names-config-box {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px 16px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    }
-
-    .names-config-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-      user-select: none;
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .names-config-body {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-      margin-top: 12px;
-    }
-
-    .names-config-box.collapsed .names-config-body {
-      display: none;
-    }
-
-    .names-config-box.collapsed .names-toggle-icon {
-      transform: rotate(-90deg);
-    }
-
-    .names-toggle-icon {
-      transition: transform 0.25s ease;
-      font-size: 0.8rem;
-      color: var(--muted);
-      display: inline-block;
-    }
-
-    .names-config-box label {
-      font-size: 0.85rem;
-      color: var(--muted);
-      font-weight: 600;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      flex: 1;
-    }
-
-    .names-config-box input {
-      padding: 6px 10px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      background: var(--bg);
-      color: var(--text);
-      font-size: 0.95rem;
-      outline: none;
-    }
-
-    .names-config-box input:focus {
-      border-color: var(--primary);
-    }
 
     .new-section-box {
       display: flex;
@@ -337,25 +271,44 @@
     .checks-group {
       display: flex;
       align-items: center;
-      gap: 12px;
-      flex-shrink: 0;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
-    .check-wrapper {
-      display: flex;
+    .item-checkboxes-container {
+      display: inline-flex;
       align-items: center;
-      gap: 4px;
-      font-size: 0.8rem;
-      color: var(--muted);
-      cursor: pointer;
-      user-select: none;
+      gap: 5px;
+      flex-wrap: wrap;
     }
 
-    .check-wrapper input[type="checkbox"] {
+    .item-checkbox-single {
       width: 18px;
       height: 18px;
       accent-color: var(--primary);
       cursor: pointer;
+    }
+
+    .item-qty-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--muted);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 2px 7px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      user-select: none;
+      transition: all 0.15s;
+    }
+
+    .item-qty-badge:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--card);
     }
 
     .item-actions {
@@ -558,7 +511,14 @@
       font-size: 0.95rem;
     }
 
-    .add-item-form input[type="number"] {
+    .add-item-form input[type="number"].item-qty-input {
+      flex: 0.8;
+      min-width: 65px;
+      padding: 9px 12px;
+      font-size: 0.95rem;
+    }
+
+    .add-item-form input[type="number"].item-val-input {
       flex: 1;
       min-width: 90px;
       padding: 9px 12px;
@@ -831,14 +791,6 @@
         padding: 10px;
       }
 
-      .names-config-box {
-        padding: 12px;
-      }
-
-      .names-config-body {
-        flex-direction: column;
-        gap: 10px;
-      }
 
       .new-section-box {
         flex-direction: column;
@@ -885,17 +837,10 @@
       .checks-group {
         width: 100%;
         justify-content: flex-start;
-        gap: 16px;
+        gap: 10px;
       }
 
-      .check-wrapper {
-        font-size: 0.85rem;
-        padding: 4px 6px;
-        background: var(--bg);
-        border-radius: 6px;
-      }
-
-      .check-wrapper input[type="checkbox"] {
+      .item-checkbox-single {
         width: 20px;
         height: 20px;
       }
@@ -991,23 +936,6 @@
       </div>
     </header>
 
-    <!-- Campos para personalizar os nomes das 2 pessoas -->
-    <div class="names-config-box" id="namesConfigBox">
-      <div class="names-config-header" id="namesConfigHeader">
-        <span>👥 Nomes dos Grupos</span>
-        <span class="names-toggle-icon" id="namesToggleIcon">▼</span>
-      </div>
-      <div class="names-config-body" id="namesConfigBody">
-        <label>
-          Nome Grupo 1:
-          <input type="text" id="nameP1Input" value="Pessoa 1" />
-        </label>
-        <label>
-          Nome Grupo 2:
-          <input type="text" id="nameP2Input" value="Pessoa 2" />
-        </label>
-      </div>
-    </div>
 
     <!-- Calendário do Acampamento / Viagem -->
     <section class="trip-calendar-card" id="tripCalendarCard" aria-label="Calendário do Acampamento">
@@ -1100,24 +1028,6 @@
     const sectionInput = document.getElementById("sectionInput");
     const statusDot = document.getElementById("statusDot");
     const layoutToggle = document.getElementById("layoutToggle");
-    const nameP1Input = document.getElementById("nameP1Input");
-    const nameP2Input = document.getElementById("nameP2Input");
-
-    // Gerenciamento da Seção de Nomes dos Grupos (Esconder/Expandir)
-    const namesConfigBox = document.getElementById("namesConfigBox");
-    const namesConfigHeader = document.getElementById("namesConfigHeader");
-
-    if (localStorage.getItem("namesConfigCollapsed") === "true") {
-      namesConfigBox.classList.add("collapsed");
-    }
-
-    namesConfigHeader.addEventListener("click", () => {
-      namesConfigBox.classList.toggle("collapsed");
-      localStorage.setItem(
-        "namesConfigCollapsed",
-        namesConfigBox.classList.contains("collapsed")
-      );
-    });
 
     // Gerenciamento do Calendário da Viagem (Esconder/Expandir e Ações)
     const tripCalendarCard = document.getElementById("tripCalendarCard");
@@ -1304,23 +1214,10 @@
     });
 
     // Carregar configurações salvas no navegador (LocalStorage)
-    nameP1Input.value = localStorage.getItem("nameP1") || "Grupo 1";
-    nameP2Input.value = localStorage.getItem("nameP2") || "Grupo 2";
-    
     let currentLayout = localStorage.getItem("layout") || "list"; // 'list' ou 'tabs'
     let activeTabId = localStorage.getItem("activeTabId") || null;
 
     updateLayoutButtonUI();
-
-    nameP1Input.addEventListener("input", () => {
-      localStorage.setItem("nameP1", nameP1Input.value || "P1");
-      renderCachedSections();
-    });
-
-    nameP2Input.addEventListener("input", () => {
-      localStorage.setItem("nameP2", nameP2Input.value || "P2");
-      renderCachedSections();
-    });
 
     let lastSnapshotDocs = [];
 
@@ -1399,9 +1296,6 @@
     }
 
     function renderSections(docs) {
-      const name1 = nameP1Input.value.trim() || "P1";
-      const name2 = nameP2Input.value.trim() || "P2";
-
       if (docs.length === 0) {
         sectionsContainer.innerHTML = `
           <div class="empty-state">
@@ -1430,13 +1324,21 @@
           const data = docSnap.data();
           const sectionId = docSnap.id;
           const itens = Array.isArray(data.itens) ? data.itens : [];
-          const concluidosP1 = itens.filter(i => i.p1).length;
-          const concluidosP2 = itens.filter(i => i.p2).length;
-          const total = itens.length;
+          let totalChecks = 0;
+          let checkedCount = 0;
+          itens.forEach((i) => {
+            const q = Math.max(1, parseInt(i.qtd, 10) || 1);
+            totalChecks += q;
+            if (Array.isArray(i.checks)) {
+              checkedCount += i.checks.filter(Boolean).length;
+            } else if (i.p1 || i.p2) {
+              checkedCount += 1;
+            }
+          });
 
           const tabBtn = document.createElement("button");
           tabBtn.className = `tab-btn ${sectionId === activeTabId ? "active" : ""}`;
-          tabBtn.textContent = `${data.titulo} (${Math.min(concluidosP1, concluidosP2)}/${total})`;
+          tabBtn.textContent = `${data.titulo} (${checkedCount}/${totalChecks})`;
           
           tabBtn.addEventListener("click", () => {
             activeTabId = sectionId;
@@ -1465,7 +1367,7 @@
         } else {
           const activeDoc = docs.find(d => d.id === activeTabId);
           if (activeDoc) {
-            sectionsContainer.appendChild(createSectionCard(activeDoc, name1, name2));
+            sectionsContainer.appendChild(createSectionCard(activeDoc));
           }
         }
 
@@ -1473,7 +1375,7 @@
         // Modo Lista tradicional (exibe todas)
         tabsContainer.style.display = "none";
         docs.forEach((docSnap) => {
-          sectionsContainer.appendChild(createSectionCard(docSnap, name1, name2));
+          sectionsContainer.appendChild(createSectionCard(docSnap));
         });
         // No modo lista, exibe também o resumo financeiro ao final
         sectionsContainer.appendChild(createFinanceView(docs));
@@ -1597,13 +1499,22 @@
       return container;
     }
 
-    function createSectionCard(docSnap, name1, name2) {
+    function createSectionCard(docSnap) {
       const data = docSnap.data();
       const sectionId = docSnap.id;
       const itens = Array.isArray(data.itens) ? data.itens : [];
       
-      const p1Concluidos = itens.filter((i) => i.p1).length;
-      const p2Concluidos = itens.filter((i) => i.p2).length;
+      let totalChecks = 0;
+      let totalConcluidos = 0;
+      itens.forEach((i) => {
+        const q = Math.max(1, parseInt(i.qtd, 10) || 1);
+        totalChecks += q;
+        if (Array.isArray(i.checks)) {
+          totalConcluidos += i.checks.filter(Boolean).length;
+        } else if (i.p1 || i.p2) {
+          totalConcluidos += 1;
+        }
+      });
 
       const card = document.createElement("div");
       card.className = "section-card";
@@ -1630,8 +1541,7 @@
       const badgesGroup = document.createElement("div");
       badgesGroup.className = "badges-group";
       badgesGroup.innerHTML = `
-        <span class="badge">${name1}: ${p1Concluidos}/${itens.length}</span>
-        <span class="badge">${name2}: ${p2Concluidos}/${itens.length}</span>
+        <span class="badge">${totalConcluidos}/${totalChecks} concluídos</span>
       `;
 
       titleGroup.appendChild(titleSpan);
@@ -1661,9 +1571,21 @@
         const itemContent = document.createElement("div");
         itemContent.className = "item-content";
 
+        const qtd = Math.max(1, parseInt(item.qtd, 10) || 1);
+        let checks = Array.isArray(item.checks) ? [...item.checks] : [];
+        if (checks.length !== qtd) {
+          const legacyChecked = !!(item.p1 || item.p2);
+          const newChecks = [];
+          for (let c = 0; c < qtd; c++) {
+            newChecks.push(checks[c] !== undefined ? !!checks[c] : (c === 0 && legacyChecked));
+          }
+          checks = newChecks;
+        }
+
+        const isAllDone = checks.length > 0 && checks.every(Boolean);
+
         const span = document.createElement("span");
-        const bothDone = item.p1 && item.p2;
-        span.className = `item-text ${bothDone ? "done-both" : ""}`;
+        span.className = `item-text ${isAllDone ? "done-both" : ""}`;
         span.textContent = item.nome;
         span.title = "Clique para editar o item";
 
@@ -1677,7 +1599,7 @@
           }
         });
 
-        // Grupo de checkboxes para os nomes personalizados
+        // Grupo de checkboxes e quantidade
         const checksGroup = document.createElement("div");
         checksGroup.className = "checks-group";
 
@@ -1714,37 +1636,58 @@
           }
         });
 
-        // Checkbox Pessoa 1
-        const labelP1 = document.createElement("label");
-        labelP1.className = "check-wrapper";
-        const checkP1 = document.createElement("input");
-        checkP1.type = "checkbox";
-        checkP1.checked = !!item.p1;
-        checkP1.addEventListener("change", async () => {
-          const updatedItens = [...itens];
-          updatedItens[index] = { ...item, p1: checkP1.checked };
-          await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
+        // Tag / Badge de Quantidade (clicável para alterar a quantidade)
+        const qtyBadge = document.createElement("span");
+        qtyBadge.className = "item-qty-badge";
+        qtyBadge.textContent = String(qtd);
+        qtyBadge.title = "Quantidade deste item (clique para alterar)";
+        qtyBadge.addEventListener("click", async () => {
+          const res = prompt(`Alterar quantidade de "${item.nome}":`, qtd);
+          if (res !== null) {
+            const novaQtd = parseInt(res.trim(), 10);
+            if (!isNaN(novaQtd) && novaQtd >= 1) {
+              const updatedItens = [...itens];
+              const updatedChecks = [];
+              for (let i = 0; i < novaQtd; i++) {
+                updatedChecks.push(checks[i] !== undefined ? !!checks[i] : false);
+              }
+              const itemAtualizado = { ...item, qtd: novaQtd, checks: updatedChecks };
+              delete itemAtualizado.p1;
+              delete itemAtualizado.p2;
+              updatedItens[index] = itemAtualizado;
+              await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
+            }
+          }
         });
-        labelP1.appendChild(checkP1);
-        labelP1.appendChild(document.createTextNode(" " + name1));
 
-        // Checkbox Pessoa 2
-        const labelP2 = document.createElement("label");
-        labelP2.className = "check-wrapper";
-        const checkP2 = document.createElement("input");
-        checkP2.type = "checkbox";
-        checkP2.checked = !!item.p2;
-        checkP2.addEventListener("change", async () => {
-          const updatedItensList = [...itens];
-          updatedItensList[index] = { ...item, p2: checkP2.checked };
-          await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItensList });
-        });
-        labelP2.appendChild(checkP2);
-        labelP2.appendChild(document.createTextNode(" " + name2));
+        // Contêiner de Checkboxes (1 checkbox por unidade da quantidade)
+        const checksBoxContainer = document.createElement("div");
+        checksBoxContainer.className = "item-checkboxes-container";
 
+        for (let c = 0; c < qtd; c++) {
+          const checkInput = document.createElement("input");
+          checkInput.type = "checkbox";
+          checkInput.className = "item-checkbox-single";
+          checkInput.title = qtd > 1 ? `Item ${c + 1} de ${qtd}` : "Marcar concluído";
+          checkInput.checked = !!checks[c];
+
+          checkInput.addEventListener("change", async () => {
+            const updatedItens = [...itens];
+            const newChecks = [...checks];
+            newChecks[c] = checkInput.checked;
+            const itemAtualizado = { ...item, qtd, checks: newChecks };
+            delete itemAtualizado.p1;
+            delete itemAtualizado.p2;
+            updatedItens[index] = itemAtualizado;
+            await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
+          });
+
+          checksBoxContainer.appendChild(checkInput);
+        }
+
+        checksGroup.appendChild(qtyBadge);
+        checksGroup.appendChild(checksBoxContainer);
         checksGroup.appendChild(valorBtn);
-        checksGroup.appendChild(labelP1);
-        checksGroup.appendChild(labelP2);
 
         itemContent.appendChild(span);
         itemContent.appendChild(checksGroup);
@@ -1811,13 +1754,14 @@
         ul.appendChild(li);
       });
 
-      // Formulário para novo item
+      // Formulário para novo item com campo de quantidade
       const addForm = document.createElement("form");
       addForm.className = "add-item-form";
       addForm.innerHTML = `
         <input type="text" placeholder="Adicionar item..." required />
+        <input type="number" class="item-qty-input" min="1" value="1" placeholder="Qtd" title="Quantidade do item" required />
         <input type="url" placeholder="Link (opcional)" />
-        <input type="number" step="0.01" min="0" placeholder="R$ Valor" />
+        <input type="number" class="item-val-input" step="0.01" min="0" placeholder="R$ Valor" />
         <button type="submit" class="btn-primary">+</button>
       `;
 
@@ -1825,20 +1769,25 @@
         e.preventDefault();
         const inputs = addForm.querySelectorAll("input");
         const nome = inputs[0].value.trim();
-        let link = inputs[1].value.trim();
-        const valorRaw = inputs[2].value.trim();
+        const qtdRaw = inputs[1].value.trim();
+        let link = inputs[2].value.trim();
+        const valorRaw = inputs[3].value.trim();
         
         if (!nome) return;
+
+        const qtd = Math.max(1, parseInt(qtdRaw, 10) || 1);
+        const checks = new Array(qtd).fill(false);
 
         if (link && !link.startsWith("http://") && !link.startsWith("https://")) {
           link = "https://" + link;
         }
 
         inputs[0].value = "";
-        inputs[1].value = "";
+        inputs[1].value = "1";
         inputs[2].value = "";
+        inputs[3].value = "";
 
-        const novoItem = { nome, p1: false, p2: false };
+        const novoItem = { nome, qtd, checks };
         if (link) novoItem.link = link;
         if (valorRaw !== "" && !isNaN(parseFloat(valorRaw))) {
           novoItem.valor = parseFloat(valorRaw);
