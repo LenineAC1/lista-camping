@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checklist para acampamento</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #831843;
+      --primary-hover: #9f1239;
+      --danger: #ef4444;
+      --item-hover: #f8fafc;
+      --link-color: #2563eb;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      padding: 16px 12px 60px;
+      transition: background 0.2s, color 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    header h1 {
+      font-size: 1.35rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #eab308;
+      display: inline-block;
+    }
+
+    .status-dot.online {
+      background: var(--primary);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .layout-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+
+    .new-section-box {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    input[type="text"], input[type="url"] {
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--card);
+      color: var(--text);
+      font-size: 1rem;
+      outline: none;
+    }
+
+    input[type="text"]:focus, input[type="url"]:focus {
+      border-color: var(--primary);
+    }
+
+    .new-section-box input[type="text"] {
+      flex: 1;
+    }
+
+    button.btn-primary {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    button.btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    /* Sistema de Abas */
+    .tabs-container {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      margin-bottom: 16px;
+      padding-bottom: 4px;
+    }
+
+    .tab-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .section-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    }
+
+    .section-card.collapsed .section-body {
+      display: none;
+    }
+
+    .section-card.collapsed .section-header {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .section-card.collapsed .section-toggle-icon {
+      transform: rotate(-90deg);
+    }
+
+    .section-toggle-icon {
+      transition: transform 0.25s ease;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-left: 6px;
+      display: inline-block;
+      user-select: none;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .section-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      flex-wrap: wrap;
+    }
+
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px dashed transparent;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .section-title:hover {
+      background: var(--item-hover);
+      border-color: var(--border);
+    }
+
+    .badges-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      background: var(--bg);
+      color: var(--muted);
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+    }
+
+    .btn-icon-danger {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 4px 6px;
+      border-radius: 6px;
+    }
+
+    .btn-icon-danger:hover {
+      color: var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .item-list {
+      list-style: none;
+      margin-bottom: 12px;
+    }
+
+    .item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 6px;
+      border-radius: 6px;
+      transition: background 0.15s;
+      gap: 8px;
+    }
+
+    .item-row:hover {
+      background: var(--item-hover);
+    }
+
+    .item-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex: 1;
+      min-width: 0;
+      gap: 12px;
+    }
+
+    .item-text {
+      word-break: break-word;
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+      border: 1px dashed transparent;
+      flex: 1;
+    }
+
+    .item-text:hover {
+      background: var(--bg);
+      border-color: var(--border);
+    }
+
+    .item-text.done-both {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+
+    .checks-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .item-checkboxes-container {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .item-checkbox-single {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .item-qty-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--muted);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 2px 7px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      user-select: none;
+      transition: all 0.15s;
+    }
+
+    .item-qty-badge:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--card);
+    }
+
+    .item-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .btn-link-icon {
+      background: transparent;
+      border: none;
+      color: var(--link-color);
+      cursor: pointer;
+      font-size: 0.95rem;
+      padding: 4px 6px;
+      border-radius: 6px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .btn-link-icon:hover {
+      background: rgba(37, 99, 235, 0.1);
+    }
+
+    .btn-link-icon.btn-link-empty {
+      color: var(--muted);
+      opacity: 0.5;
+    }
+
+    .btn-link-icon.btn-link-empty:hover {
+      opacity: 1;
+      background: rgba(148, 163, 184, 0.15);
+    }
+
+    .item-valor-tag {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #059669;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 2px 7px;
+      border-radius: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+
+    .item-valor-tag.empty {
+      color: var(--muted);
+      background: var(--bg);
+      border: 1px dashed var(--border);
+      opacity: 0.7;
+    }
+
+    .item-valor-tag:hover {
+      opacity: 1;
+      filter: brightness(0.95);
+    }
+
+    .tab-btn.tab-btn-finance {
+      margin-left: auto;
+      border-color: #10b981;
+      color: #059669;
+    }
+
+    .tab-btn.tab-btn-finance.active {
+      background: #059669;
+      color: #ffffff;
+      border-color: #059669;
+    }
+
+    /* Tabela e visualização de Valores/Gastos */
+    .finance-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    }
+
+    .finance-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .finance-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .finance-total-card {
+      background: linear-gradient(135deg, #059669, #047857);
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      min-width: 160px;
+    }
+
+    .finance-total-label {
+      font-size: 0.8rem;
+      opacity: 0.9;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+
+    .finance-total-amount {
+      font-size: 1.4rem;
+      font-weight: 800;
+    }
+
+    .finance-section {
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .finance-section-title {
+      background: var(--bg);
+      padding: 10px 14px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .finance-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .finance-table th,
+    .finance-table td {
+      padding: 10px 14px;
+      text-align: left;
+    }
+
+    .finance-table th {
+      background: var(--card);
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .finance-table td {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .finance-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .finance-table .col-val {
+      text-align: right;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .finance-link-icon {
+      color: var(--link-color);
+      text-decoration: none;
+      margin-left: 6px;
+      font-size: 0.85rem;
+    }
+
+    .add-item-form {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .add-item-form input[type="text"] {
+      flex: 2;
+      min-width: 140px;
+      padding: 9px 12px;
+      font-size: 0.95rem;
+    }
+
+    .add-item-form input[type="url"] {
+      flex: 1.5;
+      min-width: 120px;
+      padding: 9px 12px;
+      font-size: 0.95rem;
+    }
+
+    .add-item-form input[type="number"].item-qty-input {
+      flex: 0.8;
+      min-width: 65px;
+      padding: 9px 12px;
+      font-size: 0.95rem;
+    }
+
+    .add-item-form input[type="number"].item-val-input {
+      flex: 1;
+      min-width: 90px;
+      padding: 9px 12px;
+      font-size: 0.95rem;
+    }
+
+    .add-item-form button {
+      padding: 9px 14px;
+      font-size: 0.95rem;
+    }
+
+    /* Calendário do Acampamento */
+    .trip-calendar-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    }
+
+    .trip-calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0;
+      flex-wrap: wrap;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .trip-calendar-card.collapsed .trip-calendar-body {
+      display: none;
+    }
+
+    .trip-calendar-card.collapsed .trip-toggle-icon {
+      transform: rotate(-90deg);
+    }
+
+    .trip-toggle-icon {
+      transition: transform 0.25s ease;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-left: 6px;
+      display: inline-block;
+    }
+
+    .trip-calendar-body {
+      margin-top: 14px;
+    }
+
+    .trip-badge-range {
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: rgba(131, 24, 67, 0.1);
+      color: var(--primary);
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(131, 24, 67, 0.2);
+    }
+
+    .calendar-timeline {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .calendar-day-box {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 6px;
+      text-align: center;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 4px;
+      transition: all 0.15s;
+    }
+
+    .calendar-day-box.camp-active {
+      border-color: var(--primary);
+      background: rgba(131, 24, 67, 0.05);
+    }
+
+    .calendar-day-box.travel-day {
+      border-color: #f59e0b;
+      background: rgba(245, 158, 11, 0.08);
+    }
+
+    .cal-weekday {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .cal-day-num {
+      font-size: 1.25rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .cal-month {
+      font-size: 0.7rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .cal-day-tags {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      width: 100%;
+      margin-top: 2px;
+    }
+
+    .cal-day-tag {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 4px;
+      border-radius: 4px;
+      line-height: 1.1;
+      width: 100%;
+      word-break: break-word;
+    }
+
+    .cal-day-tag.tag-departure {
+      background: #f59e0b;
+      color: #fff;
+    }
+
+    .cal-day-tag.tag-camp {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .cal-day-tag.tag-return {
+      background: #0284c7;
+      color: #fff;
+    }
+
+    .trip-events-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-top: 1px dashed var(--border);
+      padding-top: 12px;
+      margin-bottom: 12px;
+    }
+
+    .trip-event-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.88rem;
+      padding: 6px 10px;
+      background: var(--bg);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .trip-event-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 0;
+      flex-wrap: wrap;
+    }
+
+    .trip-event-emoji {
+      font-size: 1.15rem;
+      line-height: 1;
+    }
+
+    .trip-event-date {
+      font-weight: 700;
+      color: var(--primary);
+      white-space: nowrap;
+      min-width: 85px;
+    }
+
+    .trip-event-desc {
+      color: var(--text);
+      word-break: break-word;
+      flex: 1;
+    }
+
+    .trip-add-event-form {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      background: var(--bg);
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .trip-add-event-form select,
+    .trip-add-event-form input {
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--card);
+      color: var(--text);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .trip-add-event-form select:focus,
+    .trip-add-event-form input:focus {
+      border-color: var(--primary);
+    }
+
+    .trip-add-event-form .emoji-input {
+      width: 70px;
+      text-align: center;
+      font-size: 1rem;
+    }
+
+    .trip-add-event-form .date-select {
+      min-width: 130px;
+    }
+
+    .trip-add-event-form .desc-input {
+      flex: 1;
+      min-width: 150px;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: var(--muted);
+      padding: 40px 20px;
+      background: var(--card);
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+    }
+
+    /* Otimizações Responsivas para Celular / Telas Pequenas */
+    @media (max-width: 600px) {
+      body {
+        padding: 12px 8px 60px;
+      }
+
+      header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+
+      header h1 {
+        font-size: 1.25rem;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .header-actions {
+        display: flex;
+        width: 100%;
+      }
+
+      .header-actions button {
+        flex: 1;
+        padding: 10px;
+      }
+
+
+      .new-section-box {
+        flex-direction: column;
+      }
+
+      .new-section-box input[type="text"],
+      .new-section-box button {
+        width: 100%;
+        min-height: 44px; /* Tamanho confortável para toque */
+      }
+
+      .section-card {
+        padding: 12px;
+      }
+
+      .section-header {
+        align-items: flex-start;
+      }
+
+      .item-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding: 10px 6px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .item-row:last-child {
+        border-bottom: none;
+      }
+
+      .item-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        width: 100%;
+      }
+
+      .item-text {
+        font-size: 1rem;
+        width: 100%;
+      }
+
+      .checks-group {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 10px;
+      }
+
+      .item-checkbox-single {
+        width: 20px;
+        height: 20px;
+      }
+
+      .item-actions {
+        align-self: flex-end;
+        gap: 8px;
+        margin-top: -2px;
+      }
+
+      .btn-link-icon,
+      .btn-icon-danger {
+        padding: 6px 10px;
+        font-size: 1.1rem;
+        min-height: 38px;
+        min-width: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .add-item-form {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .add-item-form input[type="text"],
+      .add-item-form input[type="url"],
+      .add-item-form input[type="number"],
+      .add-item-form button {
+        width: 100%;
+        min-height: 44px;
+        font-size: 1rem;
+      }
+
+      .tab-btn.tab-btn-finance {
+        margin-left: 0;
+      }
+
+      .tabs-container {
+        padding-bottom: 8px;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .calendar-timeline {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+      }
+
+      .calendar-day-box {
+        padding: 8px 4px;
+      }
+
+      .cal-day-num {
+        font-size: 1.1rem;
+      }
+
+      .trip-event-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+
+      .trip-add-event-form {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .trip-add-event-form .emoji-input,
+      .trip-add-event-form .date-select,
+      .trip-add-event-form .desc-input,
+      .trip-add-event-form button {
+        width: 100%;
+        min-height: 40px;
+      }
+
+      .tab-btn {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>
+        <span id="statusDot" class="status-dot" title="Status da sincronização"></span>
+        Checklist para acampamento
+      </h1>
+      <div class="header-actions">
+        <button id="layoutToggle" class="layout-btn" title="Alternar Layout">📑 Abas</button>
+      </div>
+    </header>
+
+
+    <!-- Calendário do Acampamento / Viagem -->
+    <section class="trip-calendar-card" id="tripCalendarCard" aria-label="Calendário do Acampamento">
+      <div class="trip-calendar-header" id="tripCalendarHeader">
+        <div class="trip-calendar-title">
+          <span>📅 Calendário da Viagem</span>
+          <span class="trip-toggle-icon" id="tripToggleIcon">▼</span>
+        </div>
+        <span class="trip-badge-range">29/12/2026 a 03/01/2027 • 6 dias</span>
+      </div>
+
+      <div class="trip-calendar-body" id="tripCalendarBody">
+        <!-- Grade dos dias com destaque -->
+        <div class="calendar-timeline" id="calendarTimeline">
+          <!-- Gerado dinamicamente via JS -->
+        </div>
+
+        <!-- Lista de ações/eventos do roteiro -->
+        <div class="trip-events-list" id="tripEventsList">
+          <!-- Gerado dinamicamente via JS -->
+        </div>
+
+        <!-- Formulário para adicionar nova ação ao calendário -->
+        <form id="tripAddEventForm" class="trip-add-event-form">
+          <input type="text" id="tripEmojiInput" class="emoji-input" placeholder="Emoji" maxlength="4" value="📍" title="Emoji do evento (ex: 🚗, 🏕️, 🎒, 🍖, 🛒)" />
+          <select id="tripDateSelect" class="date-select" required title="Selecione a data da ação (29/12 a 03/01)">
+            <option value="2026-12-29">29/12/2026 (Ter)</option>
+            <option value="2026-12-30">30/12/2026 (Qua)</option>
+            <option value="2026-12-31">31/12/2026 (Qui)</option>
+            <option value="2027-01-01">01/01/2027 (Sex)</option>
+            <option value="2027-01-02">02/01/2027 (Sáb)</option>
+            <option value="2027-01-03">03/01/2027 (Dom)</option>
+          </select>
+          <input type="text" id="tripDescInput" class="desc-input" placeholder="Descrição da ação..." required />
+          <button type="submit" class="btn-primary" style="padding: 8px 14px;">+ Ação</button>
+        </form>
+      </div>
+    </section>
+
+    <form id="newSectionForm" class="new-section-box">
+      <input
+        type="text"
+        id="sectionInput"
+        placeholder="Nova seção (ex: Barraca, Cozinha, Ferramentas...)"
+        required
+      />
+      <button type="submit" class="btn-primary">+ Seção</button>
+    </form>
+
+    <div id="tabsContainer" class="tabs-container" style="display: none;"></div>
+    <div id="sectionsContainer">
+      <div class="empty-state">Carregando lista...</div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK (Modular v10 via CDN) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      updateDoc,
+      deleteDoc,
+      setDoc,
+      getDoc,
+      doc,
+      onSnapshot,
+      query,
+      orderBy,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyClkf0awNGkqzv9n_mQrkK6UaDDovBWHKc",
+      authDomain: "listacamping-41b64.firebaseapp.com",
+      projectId: "listacamping-41b64",
+      storageBucket: "listacamping-41b64.firebasestorage.app",
+      messagingSenderId: "630191411913",
+      appId: "1:630191411913:web:61190a852f78e6226db318"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const secoesRef = collection(db, "secoes");
+
+    const sectionsContainer = document.getElementById("sectionsContainer");
+    const tabsContainer = document.getElementById("tabsContainer");
+    const newSectionForm = document.getElementById("newSectionForm");
+    const sectionInput = document.getElementById("sectionInput");
+    const statusDot = document.getElementById("statusDot");
+    const layoutToggle = document.getElementById("layoutToggle");
+
+    // Gerenciamento do Calendário da Viagem (Esconder/Expandir e Ações)
+    const tripCalendarCard = document.getElementById("tripCalendarCard");
+    const tripCalendarHeader = document.getElementById("tripCalendarHeader");
+    const calendarTimeline = document.getElementById("calendarTimeline");
+    const tripEventsList = document.getElementById("tripEventsList");
+    const tripAddEventForm = document.getElementById("tripAddEventForm");
+    const tripEmojiInput = document.getElementById("tripEmojiInput");
+    const tripDateSelect = document.getElementById("tripDateSelect");
+    const tripDescInput = document.getElementById("tripDescInput");
+
+    // Estado de colapso do calendário no localStorage
+    if (localStorage.getItem("tripCalendarCollapsed") === "true") {
+      tripCalendarCard.classList.add("collapsed");
+    }
+
+    tripCalendarHeader.addEventListener("click", () => {
+      tripCalendarCard.classList.toggle("collapsed");
+      localStorage.setItem(
+        "tripCalendarCollapsed",
+        tripCalendarCard.classList.contains("collapsed")
+      );
+    });
+
+    // Referência do documento de eventos do calendário no Firestore
+    const tripCalendarDocRef = doc(db, "configuracoes", "calendarioViagem");
+
+    // Eventos padrão caso o Firestore ainda esteja vazio
+    const defaultTripEvents = [
+      { id: "e1", emoji: "🚗", data: "2026-12-29", desc: "Pegar o carro em Itanhaém e ir para São Tomé" },
+      { id: "e2", emoji: "🎒", data: "2027-01-02", desc: "Ir embora de São Tomé" },
+      { id: "e3", emoji: "🔑", data: "2027-01-03", desc: "Devolver o Carro" }
+    ];
+
+    let currentTripEvents = [];
+
+    // Escutar eventos do calendário em tempo real no Firestore
+    onSnapshot(tripCalendarDocRef, async (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        currentTripEvents = Array.isArray(data.eventos) ? data.eventos : [];
+        renderCalendar();
+      } else {
+        // Inicializar documento com os eventos padrão na primeira vez
+        try {
+          await setDoc(tripCalendarDocRef, {
+            eventos: defaultTripEvents,
+            atualizadoEm: serverTimestamp()
+          });
+        } catch (err) {
+          console.error("Erro ao inicializar calendário no Firestore:", err);
+          currentTripEvents = defaultTripEvents;
+          renderCalendar();
+        }
+      }
+    }, (error) => {
+      console.error("Erro ao carregar calendário do Firestore:", error);
+      currentTripEvents = defaultTripEvents;
+      renderCalendar();
+    });
+
+    async function saveTripEvents(events) {
+      try {
+        await setDoc(tripCalendarDocRef, {
+          eventos: events,
+          atualizadoEm: serverTimestamp()
+        }, { merge: true });
+      } catch (err) {
+        alert("Erro ao salvar ação no calendário. Verifique a conexão.");
+        console.error("Erro ao salvar tripEvents no Firestore:", err);
+      }
+    }
+
+    const tripDaysInfo = [
+      { date: "2026-12-29", weekday: "Ter", dayNum: "29", month: "Dez 2026", defaultType: "travel-day" },
+      { date: "2026-12-30", weekday: "Qua", dayNum: "30", month: "Dez 2026", defaultType: "camp-active" },
+      { date: "2026-12-31", weekday: "Qui", dayNum: "31", month: "Dez 2026", defaultType: "camp-active" },
+      { date: "2027-01-01", weekday: "Sex", dayNum: "01", month: "Jan 2027", defaultType: "camp-active" },
+      { date: "2027-01-02", weekday: "Sáb", dayNum: "02", month: "Jan 2027", defaultType: "travel-day" },
+      { date: "2027-01-03", weekday: "Dom", dayNum: "03", month: "Jan 2027", defaultType: "travel-day" }
+    ];
+
+    function formatDateBR(dateStr) {
+      const [ano, mes, dia] = dateStr.split("-");
+      return `${dia}/${mes}/${ano}`;
+    }
+
+    function renderCalendar() {
+      const events = currentTripEvents;
+
+      // Renderizar Grade Timeline
+      calendarTimeline.innerHTML = "";
+      tripDaysInfo.forEach((day) => {
+        const dayEvents = events.filter((e) => e.data === day.date);
+        const dayBox = document.createElement("div");
+        dayBox.className = `calendar-day-box ${day.defaultType}`;
+
+        let tagsHtml = "";
+        if (dayEvents.length > 0) {
+          tagsHtml = dayEvents
+            .map((ev) => {
+              const tagClass = ev.data === "2027-01-03" ? "tag-return" : (ev.data === "2026-12-29" || ev.data === "2027-01-02" ? "tag-departure" : "tag-camp");
+              return `<span class="cal-day-tag ${tagClass}" title="${ev.emoji} ${ev.desc}">${ev.emoji} ${ev.desc.substring(0, 16)}${ev.desc.length > 16 ? "..." : ""}</span>`;
+            })
+            .join("");
+        }
+
+        dayBox.innerHTML = `
+          <span class="cal-weekday">${day.weekday}</span>
+          <span class="cal-day-num">${day.dayNum}</span>
+          <span class="cal-month">${day.month}</span>
+          <div class="cal-day-tags">${tagsHtml}</div>
+        `;
+        calendarTimeline.appendChild(dayBox);
+      });
+
+      // Renderizar Lista de Ações
+      tripEventsList.innerHTML = "";
+      if (events.length === 0) {
+        tripEventsList.innerHTML = `<div style="color: var(--muted); font-size: 0.85rem; padding: 4px;">Nenhuma ação cadastrada para os dias 29 a 03. Adicione acima!</div>`;
+      } else {
+        // Ordenar por data
+        const sortedEvents = [...events].sort((a, b) => a.data.localeCompare(b.data));
+
+        sortedEvents.forEach((ev) => {
+          const itemEl = document.createElement("div");
+          itemEl.className = "trip-event-item";
+
+          const infoDiv = document.createElement("div");
+          infoDiv.className = "trip-event-info";
+
+          const emojiSpan = document.createElement("span");
+          emojiSpan.className = "trip-event-emoji";
+          emojiSpan.textContent = ev.emoji || "📍";
+
+          const dateSpan = document.createElement("span");
+          dateSpan.className = "trip-event-date";
+          dateSpan.textContent = formatDateBR(ev.data) + ":";
+
+          const descSpan = document.createElement("span");
+          descSpan.className = "trip-event-desc";
+          descSpan.textContent = ev.desc;
+
+          infoDiv.appendChild(emojiSpan);
+          infoDiv.appendChild(dateSpan);
+          infoDiv.appendChild(descSpan);
+
+          const delBtn = document.createElement("button");
+          delBtn.className = "btn-icon-danger";
+          delBtn.textContent = "✕";
+          delBtn.title = "Remover ação do calendário";
+          delBtn.addEventListener("click", async () => {
+            const updated = currentTripEvents.filter((x) => x.id !== ev.id);
+            await saveTripEvents(updated);
+          });
+
+          itemEl.appendChild(infoDiv);
+          itemEl.appendChild(delBtn);
+          tripEventsList.appendChild(itemEl);
+        });
+      }
+    }
+
+    // Formulário para adicionar nova ação
+    tripAddEventForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const emoji = tripEmojiInput.value.trim() || "📍";
+      const data = tripDateSelect.value;
+      const desc = tripDescInput.value.trim();
+
+      if (!data || !desc) return;
+
+      const newEvent = {
+        id: "ev_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
+        emoji,
+        data,
+        desc
+      };
+
+      const updated = [...currentTripEvents, newEvent];
+      await saveTripEvents(updated);
+
+      tripDescInput.value = "";
+    });
+
+    // Carregar configurações salvas no navegador (LocalStorage)
+    let currentLayout = localStorage.getItem("layout") || "list"; // 'list' ou 'tabs'
+    let activeTabId = localStorage.getItem("activeTabId") || null;
+
+    updateLayoutButtonUI();
+
+    let lastSnapshotDocs = [];
+
+    // Alternar Layout (Lista vs Abas)
+    layoutToggle.addEventListener("click", () => {
+      currentLayout = currentLayout === "list" ? "tabs" : "list";
+      localStorage.setItem("layout", currentLayout);
+      updateLayoutButtonUI();
+      renderCachedSections();
+    });
+
+    function updateLayoutButtonUI() {
+      if (currentLayout === "tabs") {
+        layoutToggle.textContent = "📜 Lista";
+        layoutToggle.title = "Mudar para modo Lista";
+      } else {
+        layoutToggle.textContent = "📑 Abas";
+        layoutToggle.title = "Mudar para modo Abas";
+      }
+    }
+
+    // Adicionar nova seção
+    newSectionForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const titulo = sectionInput.value.trim();
+      if (!titulo) return;
+
+      sectionInput.value = "";
+      try {
+        const docRef = await addDoc(secoesRef, {
+          titulo,
+          itens: [],
+          criadoEm: serverTimestamp()
+        });
+        if (currentLayout === "tabs") {
+          activeTabId = docRef.id;
+          localStorage.setItem("activeTabId", activeTabId);
+        }
+      } catch (err) {
+        alert("Erro ao criar seção. Verifique as regras do Firestore.");
+        console.error(err);
+      }
+    });
+
+    // Escutar mudanças em tempo real
+    const q = query(secoesRef, orderBy("criadoEm", "asc"));
+    onSnapshot(
+      q,
+      (snapshot) => {
+        statusDot.classList.add("online");
+        lastSnapshotDocs = snapshot.docs;
+        renderCachedSections();
+      },
+      (error) => {
+        statusDot.classList.remove("online");
+        sectionsContainer.innerHTML = `
+          <div class="empty-state">
+            Erro de conexão com o banco de dados.<br>
+            Verifique se o Firestore foi criado e se as regras permitem leitura/escrita.
+          </div>`;
+        console.error(error);
+      }
+    );
+
+    function renderCachedSections() {
+      if (lastSnapshotDocs.length > 0) {
+        renderSections(lastSnapshotDocs);
+      } else {
+        sectionsContainer.innerHTML = `
+          <div class="empty-state">
+            Nenhuma seção criada ainda.<br>
+            Adicione uma seção acima para começar!
+          </div>`;
+        tabsContainer.style.display = "none";
+      }
+    }
+
+    function renderSections(docs) {
+      if (docs.length === 0) {
+        sectionsContainer.innerHTML = `
+          <div class="empty-state">
+            Nenhuma seção criada ainda.<br>
+            Adicione uma seção acima para começar!
+          </div>`;
+        tabsContainer.style.display = "none";
+        return;
+      }
+
+      // Validação da aba ativa no modo abas
+      const docIds = docs.map(d => d.id);
+      if (!activeTabId || (!docIds.includes(activeTabId) && activeTabId !== "finance")) {
+        activeTabId = docIds[0];
+        localStorage.setItem("activeTabId", activeTabId);
+      }
+
+      sectionsContainer.innerHTML = "";
+
+      if (currentLayout === "tabs") {
+        tabsContainer.style.display = "flex";
+        tabsContainer.innerHTML = "";
+
+        // Criar os botões de abas para cada seção
+        docs.forEach((docSnap) => {
+          const data = docSnap.data();
+          const sectionId = docSnap.id;
+          const itens = Array.isArray(data.itens) ? data.itens : [];
+          let totalChecks = 0;
+          let checkedCount = 0;
+          itens.forEach((i) => {
+            const q = Math.max(1, parseInt(i.qtd, 10) || 1);
+            totalChecks += q;
+            if (Array.isArray(i.checks)) {
+              checkedCount += i.checks.filter(Boolean).length;
+            } else if (i.p1 || i.p2) {
+              checkedCount += 1;
+            }
+          });
+
+          const tabBtn = document.createElement("button");
+          tabBtn.className = `tab-btn ${sectionId === activeTabId ? "active" : ""}`;
+          tabBtn.textContent = `${data.titulo} (${checkedCount}/${totalChecks})`;
+          
+          tabBtn.addEventListener("click", () => {
+            activeTabId = sectionId;
+            localStorage.setItem("activeTabId", activeTabId);
+            renderSections(lastSnapshotDocs);
+          });
+
+          tabsContainer.appendChild(tabBtn);
+        });
+
+        // Aba exclusiva para visualização de Valores e Gastos Totais
+        const financeTabBtn = document.createElement("button");
+        financeTabBtn.className = `tab-btn tab-btn-finance ${activeTabId === "finance" ? "active" : ""}`;
+        financeTabBtn.innerHTML = "💰 Gastos / Valores";
+        financeTabBtn.title = "Visualizar valores de todos os itens e total geral";
+        financeTabBtn.addEventListener("click", () => {
+          activeTabId = "finance";
+          localStorage.setItem("activeTabId", activeTabId);
+          renderSections(lastSnapshotDocs);
+        });
+        tabsContainer.appendChild(financeTabBtn);
+
+        // Exibir aba de finanças ou o card da seção ativa
+        if (activeTabId === "finance") {
+          sectionsContainer.appendChild(createFinanceView(docs));
+        } else {
+          const activeDoc = docs.find(d => d.id === activeTabId);
+          if (activeDoc) {
+            sectionsContainer.appendChild(createSectionCard(activeDoc));
+          }
+        }
+
+      } else {
+        // Modo Lista tradicional (exibe todas)
+        tabsContainer.style.display = "none";
+        docs.forEach((docSnap) => {
+          sectionsContainer.appendChild(createSectionCard(docSnap));
+        });
+        // No modo lista, exibe também o resumo financeiro ao final
+        sectionsContainer.appendChild(createFinanceView(docs));
+      }
+    }
+
+    function createFinanceView(docs) {
+      const container = document.createElement("div");
+      container.className = "finance-card";
+
+      let totalGeral = 0;
+      let totalItensComValor = 0;
+
+      // Calcular o total geral primeiro
+      docs.forEach(docSnap => {
+        const data = docSnap.data();
+        const itens = Array.isArray(data.itens) ? data.itens : [];
+        itens.forEach(item => {
+          if (item.valor !== undefined && item.valor !== null && item.valor !== "") {
+            const v = parseFloat(item.valor) || 0;
+            totalGeral += v;
+            totalItensComValor++;
+          }
+        });
+      });
+
+      // Topo com Totalizadores (Apenas Leitura)
+      const header = document.createElement("div");
+      header.className = "finance-header";
+      header.innerHTML = `
+        <div class="finance-title">
+          <span>📊 Resumo de Gastos e Valores</span>
+        </div>
+        <div class="finance-total-card">
+          <span class="finance-total-label">Total Geral Estimado</span>
+          <span class="finance-total-amount">
+            ${totalGeral.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+          </span>
+        </div>
+      `;
+      container.appendChild(header);
+
+      if (totalItensComValor === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.innerHTML = `
+          Nenhum item com valor cadastrado ainda.<br>
+          Defina o valor dos itens nas seções clicando no botão <strong>"+ R$"</strong> ou informando ao criar um item.
+        `;
+        container.appendChild(empty);
+        return container;
+      }
+
+      // Detalhamento por Seção
+      docs.forEach(docSnap => {
+        const data = docSnap.data();
+        const itens = Array.isArray(data.itens) ? data.itens : [];
+        const itensComValor = itens.filter(
+          item => item.valor !== undefined && item.valor !== null && item.valor !== ""
+        );
+
+        if (itensComValor.length === 0) return;
+
+        const subtotalSecao = itensComValor.reduce((sum, item) => sum + (parseFloat(item.valor) || 0), 0);
+
+        const secDiv = document.createElement("div");
+        secDiv.className = "finance-section";
+
+        const secTitle = document.createElement("div");
+        secTitle.className = "finance-section-title";
+        secTitle.innerHTML = `
+          <span>📁 ${data.titulo} (${itensComValor.length} itens)</span>
+          <span style="font-weight: 700; color: #059669;">
+            ${subtotalSecao.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+          </span>
+        `;
+        secDiv.appendChild(secTitle);
+
+        const table = document.createElement("table");
+        table.className = "finance-table";
+        table.innerHTML = `
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th style="text-align: right;">Valor</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        `;
+
+        const tbody = table.querySelector("tbody");
+        itensComValor.forEach(item => {
+          const tr = document.createElement("tr");
+          const vNum = parseFloat(item.valor) || 0;
+          
+          let linkHtml = "";
+          if (item.link) {
+            linkHtml = `
+              <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="finance-link-icon" title="Abrir link do item">
+                🔗
+              </a>
+            `;
+          }
+
+          tr.innerHTML = `
+            <td>
+              <span>${item.nome}</span>
+              ${linkHtml}
+            </td>
+            <td class="col-val">
+              ${vNum.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        secDiv.appendChild(table);
+        container.appendChild(secDiv);
+      });
+
+      return container;
+    }
+
+    function createSectionCard(docSnap) {
+      const data = docSnap.data();
+      const sectionId = docSnap.id;
+      const itens = Array.isArray(data.itens) ? data.itens : [];
+      
+      let totalChecks = 0;
+      let totalConcluidos = 0;
+      itens.forEach((i) => {
+        const q = Math.max(1, parseInt(i.qtd, 10) || 1);
+        totalChecks += q;
+        if (Array.isArray(i.checks)) {
+          totalConcluidos += i.checks.filter(Boolean).length;
+        } else if (i.p1 || i.p2) {
+          totalConcluidos += 1;
+        }
+      });
+
+      const card = document.createElement("div");
+      card.className = "section-card";
+
+      // Cabeçalho da seção
+      const header = document.createElement("div");
+      header.className = "section-header";
+      
+      const titleGroup = document.createElement("div");
+      titleGroup.className = "section-title-group";
+
+      const titleSpan = document.createElement("span");
+      titleSpan.className = "section-title";
+      titleSpan.textContent = data.titulo;
+      titleSpan.title = "Dois cliques para renomear a seção";
+
+      const toggleIcon = document.createElement("span");
+      toggleIcon.className = "section-toggle-icon";
+      toggleIcon.textContent = "▼";
+
+      titleSpan.addEventListener("dblclick", (e) => {
+        e.stopPropagation();
+        const novoTitulo = prompt("Renomear seção:", data.titulo);
+        if (novoTitulo !== null && novoTitulo.trim() !== "") {
+          updateDoc(doc(db, "secoes", sectionId), { titulo: novoTitulo.trim() });
+        }
+      });
+
+      const badgesGroup = document.createElement("div");
+      badgesGroup.className = "badges-group";
+      badgesGroup.innerHTML = `
+        <span class="badge">${totalConcluidos}/${totalChecks} concluídos</span>
+      `;
+
+      titleGroup.appendChild(titleSpan);
+      titleGroup.appendChild(toggleIcon);
+      titleGroup.appendChild(badgesGroup);
+
+      const headerActions = document.createElement("div");
+      headerActions.style.display = "flex";
+      headerActions.style.alignItems = "center";
+      headerActions.style.gap = "4px";
+
+      const renameSectionBtn = document.createElement("button");
+      renameSectionBtn.className = "btn-link-icon";
+      renameSectionBtn.textContent = "✏️";
+      renameSectionBtn.title = "Renomear seção";
+      renameSectionBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const novoTitulo = prompt("Renomear seção:", data.titulo);
+        if (novoTitulo !== null && novoTitulo.trim() !== "") {
+          updateDoc(doc(db, "secoes", sectionId), { titulo: novoTitulo.trim() });
+        }
+      });
+
+      const deleteSectionBtn = document.createElement("button");
+      deleteSectionBtn.className = "btn-icon-danger";
+      deleteSectionBtn.textContent = "🗑️";
+      deleteSectionBtn.title = "Excluir seção";
+      deleteSectionBtn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        if (confirm(`Excluir a seção "${data.titulo}" e todos os seus itens?`)) {
+          await deleteDoc(doc(db, "secoes", sectionId));
+        }
+      });
+
+      headerActions.appendChild(renameSectionBtn);
+      headerActions.appendChild(deleteSectionBtn);
+
+      header.appendChild(titleGroup);
+      header.appendChild(headerActions);
+
+      // Estado de colapso da seção salvo no localStorage
+      const storageKey = `sectionCollapsed_${sectionId}`;
+      if (localStorage.getItem(storageKey) === "true") {
+        card.classList.add("collapsed");
+      }
+
+      header.addEventListener("click", (e) => {
+        // Se clicar em botão de ação ou links, não altera estado de colapso
+        if (e.target.closest("button") || e.target.closest("a")) return;
+        card.classList.toggle("collapsed");
+        localStorage.setItem(storageKey, card.classList.contains("collapsed"));
+      });
+
+      // Corpo da seção (escondido quando colapsado)
+      const sectionBody = document.createElement("div");
+      sectionBody.className = "section-body";
+
+      // Lista de itens
+      const ul = document.createElement("ul");
+      ul.className = "item-list";
+
+      itens.forEach((item, index) => {
+        const li = document.createElement("li");
+        li.className = "item-row";
+
+        const itemContent = document.createElement("div");
+        itemContent.className = "item-content";
+
+        const qtd = Math.max(1, parseInt(item.qtd, 10) || 1);
+        let checks = Array.isArray(item.checks) ? [...item.checks] : [];
+        if (checks.length !== qtd) {
+          const legacyChecked = !!(item.p1 || item.p2);
+          const newChecks = [];
+          for (let c = 0; c < qtd; c++) {
+            newChecks.push(checks[c] !== undefined ? !!checks[c] : (c === 0 && legacyChecked));
+          }
+          checks = newChecks;
+        }
+
+        const isAllDone = checks.length > 0 && checks.every(Boolean);
+
+        const span = document.createElement("span");
+        span.className = `item-text ${isAllDone ? "done-both" : ""}`;
+        span.textContent = item.nome;
+        span.title = "Clique para editar o item";
+
+        span.addEventListener("click", (e) => {
+          e.preventDefault();
+          const novoNome = prompt("Editar item:", item.nome);
+          if (novoNome !== null && novoNome.trim() !== "") {
+            const updatedItens = [...itens];
+            updatedItens[index] = { ...item, nome: novoNome.trim() };
+            updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
+          }
+        });
+
+        // Grupo de checkboxes e quantidade
+        const checksGroup = document.createElement("div");
+        checksGroup.className = "checks-group";
+
+        // Tag de Valor/Gasto
+        const valorBtn = document.createElement("button");
+        valorBtn.type = "button";
+        const temValor = item.valor !== undefined && item.valor !== null && item.valor !== "";
+        valorBtn.className = `item-valor-tag ${!temValor ? "empty" : ""}`;
+        const valorNum = parseFloat(item.valor) || 0;
+        valorBtn.textContent = temValor
+          ? valorNum.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
+          : "+ R$";
+        valorBtn.title = temValor
+          ? `Gasto: R$ ${valorNum.toFixed(2)} (Clique para editar ou remover)`
+          : "Clique para adicionar valor/gasto a este item";
+        valorBtn.addEventListener("click", async (e) => {
+          e.preventDefault();
+          const atual = temValor ? valorNum.toFixed(2) : "";
+          const res = prompt(
+            "Valor / Gasto do item em R$ (ex: 49.90):\nDeixe vazio para remover.",
+            atual
+          );
+          if (res !== null) {
+            const limpo = res.trim().replace(",", ".");
+            const updatedItens = [...itens];
+            const itemAtualizado = { ...item };
+            if (limpo === "" || isNaN(parseFloat(limpo))) {
+              delete itemAtualizado.valor;
+            } else {
+              itemAtualizado.valor = parseFloat(limpo);
+            }
+            updatedItens[index] = itemAtualizado;
+            await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
+          }
+        });
+
+        // Tag / Badge de Quantidade (clicável para alterar a quantidade)
+        const qtyBadge = document.createElement("span");
+        qtyBadge.className = "item-qty-badge";
+        qtyBadge.textContent = String(qtd);
+        qtyBadge.title = "Quantidade deste item (clique para alterar)";
+        qtyBadge.addEventListener("click", async () => {
+          const res = prompt(`Alterar quantidade de "${item.nome}":`, qtd);
+          if (res !== null) {
+            const novaQtd = parseInt(res.trim(), 10);
+            if (!isNaN(novaQtd) && novaQtd >= 1) {
+              const updatedItens = [...itens];
+              const updatedChecks = [];
+              for (let i = 0; i < novaQtd; i++) {
+                updatedChecks.push(checks[i] !== undefined ? !!checks[i] : false);
+              }
+              const itemAtualizado = { ...item, qtd: novaQtd, checks: updatedChecks };
+              delete itemAtualizado.p1;
+              delete itemAtualizado.p2;
+              updatedItens[index] = itemAtualizado;
+              await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
+            }
+          }
+        });
+
+        // Contêiner de Checkboxes (1 checkbox por unidade da quantidade)
+        const checksBoxContainer = document.createElement("div");
+        checksBoxContainer.className = "item-checkboxes-container";
+
+        for (let c = 0; c < qtd; c++) {
+          const checkInput = document.createElement("input");
+          checkInput.type = "checkbox";
+          checkInput.className = "item-checkbox-single";
+          checkInput.title = qtd > 1 ? `Item ${c + 1} de ${qtd}` : "Marcar concluído";
+          checkInput.checked = !!checks[c];
+
+          checkInput.addEventListener("change", async () => {
+            const updatedItens = [...itens];
+            const newChecks = [...checks];
+            newChecks[c] = checkInput.checked;
+            const itemAtualizado = { ...item, qtd, checks: newChecks };
+            delete itemAtualizado.p1;
+            delete itemAtualizado.p2;
+            updatedItens[index] = itemAtualizado;
+            await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
+          });
+
+          checksBoxContainer.appendChild(checkInput);
+        }
+
+        checksGroup.appendChild(qtyBadge);
+        checksGroup.appendChild(checksBoxContainer);
+        checksGroup.appendChild(valorBtn);
+
+        itemContent.appendChild(span);
+        itemContent.appendChild(checksGroup);
+
+        const actionsDiv = document.createElement("div");
+        actionsDiv.className = "item-actions";
+
+        // Botão para abrir o link (se houver)
+        if (item.link) {
+          const linkBtn = document.createElement("a");
+          linkBtn.className = "btn-link-icon";
+          linkBtn.href = item.link;
+          linkBtn.target = "_blank";
+          linkBtn.rel = "noopener noreferrer";
+          linkBtn.textContent = "🔗";
+          linkBtn.title = `Abrir link: ${item.link}`;
+          actionsDiv.appendChild(linkBtn);
+        }
+
+        // Botão para adicionar/editar/remover link
+        const editLinkBtn = document.createElement("button");
+        editLinkBtn.className = `btn-link-icon ${!item.link ? "btn-link-empty" : ""}`;
+        editLinkBtn.textContent = item.link ? "✏️" : "🔗+";
+        editLinkBtn.title = item.link
+          ? "Editar ou remover link do item"
+          : "Adicionar link ao item";
+        editLinkBtn.addEventListener("click", async (e) => {
+          e.preventDefault();
+          const promptMsg = item.link
+            ? `Editar link (deixe vazio para remover):\nLink atual: ${item.link}`
+            : "Inserir URL do link para este item (ex: https://...):";
+          const res = prompt(promptMsg, item.link || "");
+          if (res !== null) {
+            let novoLink = res.trim();
+            if (novoLink && !novoLink.startsWith("http://") && !novoLink.startsWith("https://")) {
+              novoLink = "https://" + novoLink;
+            }
+            const updatedItens = [...itens];
+            const itemAtualizado = { ...item };
+            if (novoLink) {
+              itemAtualizado.link = novoLink;
+            } else {
+              delete itemAtualizado.link;
+            }
+            updatedItens[index] = itemAtualizado;
+            await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
+          }
+        });
+        actionsDiv.appendChild(editLinkBtn);
+
+        const delItemBtn = document.createElement("button");
+        delItemBtn.className = "btn-icon-danger";
+        delItemBtn.textContent = "✕";
+        delItemBtn.title = "Remover item";
+        delItemBtn.addEventListener("click", async () => {
+          const updatedItens = itens.filter((_, i) => i !== index);
+          await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
+        });
+
+        actionsDiv.appendChild(delItemBtn);
+
+        li.appendChild(itemContent);
+        li.appendChild(actionsDiv);
+        ul.appendChild(li);
+      });
+
+      // Formulário para novo item com campo de quantidade
+      const addForm = document.createElement("form");
+      addForm.className = "add-item-form";
+      addForm.innerHTML = `
+        <input type="text" placeholder="Adicionar item..." required />
+        <input type="number" class="item-qty-input" min="1" value="1" placeholder="Qtd" title="Quantidade do item" required />
+        <input type="url" placeholder="Link (opcional)" />
+        <input type="number" class="item-val-input" step="0.01" min="0" placeholder="R$ Valor" />
+        <button type="submit" class="btn-primary">+</button>
+      `;
+
+      addForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const inputs = addForm.querySelectorAll("input");
+        const nome = inputs[0].value.trim();
+        const qtdRaw = inputs[1].value.trim();
+        let link = inputs[2].value.trim();
+        const valorRaw = inputs[3].value.trim();
+        
+        if (!nome) return;
+
+        const qtd = Math.max(1, parseInt(qtdRaw, 10) || 1);
+        const checks = new Array(qtd).fill(false);
+
+        if (link && !link.startsWith("http://") && !link.startsWith("https://")) {
+          link = "https://" + link;
+        }
+
+        inputs[0].value = "";
+        inputs[1].value = "1";
+        inputs[2].value = "";
+        inputs[3].value = "";
+
+        const novoItem = { nome, qtd, checks };
+        if (link) novoItem.link = link;
+        if (valorRaw !== "" && !isNaN(parseFloat(valorRaw))) {
+          novoItem.valor = parseFloat(valorRaw);
+        }
+
+        const updatedItens = [...itens, novoItem];
+        await updateDoc(doc(db, "secoes", sectionId), { itens: updatedItens });
+      });
+
+      sectionBody.appendChild(ul);
+      sectionBody.appendChild(addForm);
+
+      card.appendChild(header);
+      card.appendChild(sectionBody);
+      return card;
+    }
+  </script>
+</body>
+</html>
